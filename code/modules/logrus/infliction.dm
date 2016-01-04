@@ -11,7 +11,7 @@
 	sharp = 0	//to 1 to add limb cutting effect
 	edge = 0	//to 1 to add higher chance of cutting a limb with high brute damage
 
-/obj/effect/proc_holder/logrus/infliction/cast(mob/living/target)
+/*obj/effect/proc_holder/logrus/infliction/cast(mob/living/target)
 	var/energy = magnitude
 	var/y
 	var/d
@@ -134,4 +134,4 @@
 		target.Stun(amt_stunned)
 
 		target.eye_blind += amt_eye_blind
-		target.eye_blurry += amt_eye_blurry*/
+		target.eye_blurry += amt_eye_blurry*/*/

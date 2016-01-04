@@ -1,7 +1,7 @@
 /obj/effect/proc_holder/logrus/spellcraft
 	name = "Logrus"
 	desc = "Summon it!"  //2/(1+(x/50))
-	icon = 'icons/effects/magic.dmi'
+	//icon = 'icons/effects/magic.dmi'
 	icon_state = "logrus"
 
 	var/stage = 0									//Stage of spellcrafting
@@ -42,7 +42,7 @@
 		stage = 1
 		caster << "You summon logrus"
 		overlay = global_hud.druggy
-		gyrys = new/obj/item/logrus(caster)
+		//gyrys = new/obj/item/logrus(caster)
 
 ////////////////////Main spellcrafting proc./////////////////////////////////////////
 /obj/effect/proc_holder/logrus/spellcraft/hear_talk(mob/M as mob, text)
@@ -63,20 +63,22 @@
 		else log_debug("Stage bug, report it! [__LINE__]")
 	return
 
-
+//stage 0
 /obj/effect/proc_holder/logrus/spellcraft/proc/begin_cast(mob/M as mob, text)//not used for now
 	if(active)//text == "start" || text == "begin" || text == "initiate")
 		stage = 1
 		effects = list()
 
+//stage 1
 /obj/effect/proc_holder/logrus/spellcraft/proc/Spell_name(mob/M as mob, text)//gives a name to the spell
 	if(text && lentext(text) <= 30)
 		var/list/replacechars = list("\"" = "",">" = "","<" = "","(" = "",")" = "", "-" = " ", "_" = " ")
-		text = sanitize_simple(text, replacechars)
+		text = replace_characters(text, replacechars)
 		spell_name = text
 		vocation_spell = text
 		stage = 2
 
+//stage 2
 /obj/effect/proc_holder/logrus/spellcraft/proc/effect(mob/M as mob, text)//So adding effects.
 	switch(text)
 
@@ -105,7 +107,7 @@
 	addspace()		//Each effect is a separate word in the vocation, so here goes space.
 	addletter(text)
 
-
+//stage 3
 /obj/effect/proc_holder/logrus/spellcraft/setting(mob/M as mob, text)//Here we adjust effects' vars.
 	//This thing only adjusts stage.
 	if(subeffects_words.Find(text,1,0) || modifiers_words.Find(1,0))//Magnitude is the amount of mana the effect will be using.//This thing only adjusts stage.
@@ -163,7 +165,7 @@
 ////////////////////////100/////////////////////////////////////////////////////////////////////////////////
 /obj/effect/proc_holder/logrus/New()
 	..()
-	sprout = new/obj/effect/proc_holder/logrus/probe(src)
+	//sprout = new/obj/effect/proc_holder/logrus/probe(src)
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////

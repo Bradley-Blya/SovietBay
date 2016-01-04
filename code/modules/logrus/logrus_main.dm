@@ -54,7 +54,7 @@ obj/effect/proc_holder/logrus/Click()
 
 /obj/effect/proc_holder/logrus/hear_talk(mob/M as mob, text)
 	var/list/replacechars = list("'" = "","\"" = "",">" = "","<" = "","(" = "",")" = "")
-	text = sanitize_simple(text, replacechars)
+	text = replace_characters(text, replacechars)
 	if(text == vocation && M == caster)
 		trigger()
 
