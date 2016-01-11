@@ -77,26 +77,34 @@
 	return penalty
 
 /obj/effect/proc_holder/logrus/spellcraft/mana()//
-	//var/started = world.timeofday
-	//var/chargedtime
+	var/started = world.timeofday
+	var/chargedtime
 
 	var/manainc
-	var/x
 	while(1)
 		sleep(1)
 		if(active) continue
-		x = mana
-		manainc = (-((x-35)**2)/(91.7*x+1105)+1.5)
+
+		manainc = M() + K() + L()
 		if(manainc < 0.1)
 			continue
 		manainc = round(manainc,0.001)
 		mana += manainc
 
-		//chargedtime = (world.timeofday - started)
-		//world << "[manainc]---[mana]---[chargedtime]"
-		//stat("Mana",mana)
-		//if(manainc < 0.01)
-		//stat("Mana",mana)
+		chargedtime = (world.timeofday - started)
+		world << "[manainc]---[mana]---[chargedtime]"
+		stat("Mana",mana)
+		if(manainc < 0.01)
+		stat("Mana",mana)
+
+/obj/effect/proc_holder/logrus/spellcraft
+	proc/M()
+		return (-(10*L()/(mana+5))**0.38)
+	proc/K()
+		return (-((0.014*mana)**2))
+	proc/L()
+		return 10
+
 
 /*obj/effect/proc_holder/logrus/spellcraft/consume(amt, t)
 	if(mana < amt)
@@ -108,3 +116,6 @@
 	world << "[amt] consumed by [name]"
 	return amt*/
 
+//F = L + M - K
+//		manainc = (-((x-35)**2)/(91.7*x+1105)+1.5)
+//(-(1000/(x+5))^0.38)-((0.014x)^2)+10

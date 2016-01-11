@@ -11,45 +11,77 @@
 	var/effects = list()							//Spell effects, wich will be added to the spell
 	var/obj/effect/proc_holder/logrus/effect		//spell effect. Will be added to effects list of the spell
 	var/option = "main"
-	var/sprout
-	var/gyrus
+
+mob/Stat()
+	..()
+	for(var/obj/effect/proc_holder/logrus/spellcraft/S in contents)
+		statpanel("logrus", "[S][round(S.mana, 1)]", S)
+
+mob/verb/gl() // TESTING PURPOSES
+	set usr = src
+
+	new/obj/effect/proc_holder/logrus/spellcraft(usr)
+
+mob/proc/logrus_check()
+	if(istype(get_active_hand(), /obj/item/logrus/rein)) return 3
+	var/obj/effect/proc_holder/logrus/spellcraft/logrus = locate() in src
+	if(logrus)
+		if(logrus.stage)	return 2
+		else 				return 1
+	else 					return 0
+
+
+mob/proc/get_logrus()
+	var/obj/effect/proc_holder/logrus/spellcraft/logrus = locate() in src
+	return logrus
+
+
+mob/proc/get_logrus_probe()
+	var/obj/item/logrus/rein/rein = locate() in src
+	return rein.probe
 
 
 /*/obj/effect/proc_holder/logrus/spellcraft/see_emote(mob/M as mob, text)
 	if(*/
-/obj/screen/logrus_overlay
-	layer = 19
-	icon = 'icons/480x480.dmi'
-	icon_state = "yellow_overlay"
 
 /obj/effect/proc_holder/logrus/spellcraft/Click()
 	if(usr == caster)
 		toggle()
 
+/obj/screen/logrus
+	screen_loc = "WEST,SOUTH to EAST,NORTH"
+//	icon = 'icons/480x480.dmi'
+	icon_state = "druggy"
+	layer = 17
+	mouse_opacity = 0
+
 /obj/effect/proc_holder/logrus/spellcraft/proc/toggle()
 	if(stage)
 		stage = 0
-		if(istype(effect, /obj/effect/proc_holder/logrus/shpt))
+		/*if(istype(effect, /obj/effect/proc_holder/logrus/shpt))
 			var/obj/effect/proc_holder/logrus/shpt/E = effect
 			E.effects = effects
-			E.name = spell_name
+			E.name = spell_name*/
 		effects = list()
+		for(var/obj/item/logrus/rein/rein in caster.contents)
+			del rein
 		caster << "You let logrus away."
-		overlay = null
-		//if(caster.client)
-		//	var/obj/screen/logrus_overlay/overlay = new(caster.client.screen)
+		for(var/obj/screen/logrus/screen in caster.client.screen)
+			del screen
 	else if(!stage)
 		stage = 1
 		caster << "You summon logrus"
-		overlay = global_hud.druggy
-		//gyrys = new/obj/item/logrus(caster)
+		var/screen = new /obj/screen/logrus()
+		caster.client.screen += screen
 
+/////////////////////////////////////////////////////////////////////////////////////
 ////////////////////Main spellcrafting proc./////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////
 /obj/effect/proc_holder/logrus/spellcraft/hear_talk(mob/M as mob, text)
 	if(caster != M)	//Other people ignored.
 		return
 
-	switch(stage)						//This is where "stage" is used.
+	switch(stage)						//This is where stage is used.
 		//if(0) begin_cast(M, text)
 
 		if(1) Spell_name(M, text)
@@ -109,7 +141,6 @@
 
 //stage 3
 /obj/effect/proc_holder/logrus/spellcraft/setting(mob/M as mob, text)//Here we adjust effects' vars.
-	//This thing only adjusts stage.
 	if(subeffects_words.Find(text,1,0) || modifiers_words.Find(1,0))//Magnitude is the amount of mana the effect will be using.//This thing only adjusts stage.
 		if(!isspell(effect))
 			log_debug("it's not a spell in logrus.dm on [__LINE__]")
@@ -120,12 +151,6 @@
 			log_debug("thats 0 in spellcraft on [__LINE__]")
 			wrongword(M, text)
 
-		/*switch(effect.name)
-			if("genetic") stage = 110
-			if("infliction") stage = 120
-
-
-			if("imposition") stage = 910*/
 
 	else if(magnitude_mod.Find(text,1,0))
 
@@ -135,16 +160,6 @@
 	//else if(text == "end")//End of spellcrafting, compiles the last effect.
 		//compile_effect(M)
 	else wrongword(M, text)
-
-
-/*obj/effect/proc_holder/logrus/spellcraft/proc/magnitude(mob/M, text)
-	switch(text)
-		if("halveten") effect.magnitude += 5
-		if("singleten") effect.magnitude += 10
-		if("doubleten") effect.magnitude += 20
-		if("fivehalveten") effect.magnitude += 25
-	addletter(text)*/
-
 
 /obj/effect/proc_holder/logrus/spellcraft/proc/addletter(text)
 	var/L
@@ -163,18 +178,15 @@
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////100/////////////////////////////////////////////////////////////////////////////////
-/obj/effect/proc_holder/logrus/New()
-	..()
-	//sprout = new/obj/effect/proc_holder/logrus/probe(src)
 
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////wordlists///////////////////////////////////////////////////////////////////////////
 var/obj/effect/proc_holder/logrus/list/starting_words = list("start", "begin", "initiate")
 var/obj/effect/proc_holder/logrus/list/effects_words = list("genetic", "imposition", "infliction")
 var/obj/effect/proc_holder/logrus/list/subeffects_words = list(
 "hallucinations", "hulk", "laser",												//genetic
 "brute", "burn", "oxygen", "toxins", "stun", "paralyse", "weaken",				//infliction
-"select", "point", "human", "living", "robot")																//imposition
+"select", "point", "human", "living", "robot")									//imposition
 var/obj/effect/proc_holder/logrus/list/modifiers_words = list(
 
 "duration")

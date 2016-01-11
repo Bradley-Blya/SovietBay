@@ -24,7 +24,7 @@
 
 /*
 	Standard mob ClickOn()
-	Handles exceptions: Buildmode, middle click, modified clicks, mech actions
+	Handles exceptions: Buildmode, middle click, modified clicks, mech actions and logrs actions
 
 	After that, mostly just check your state, check whether you're holding an item,
 	check whether you're adjacent to the target, then pass off the click to whoever
@@ -43,6 +43,12 @@
 	if(client.buildmode)
 		build_click(src, client.buildmode, params, A)
 		return
+
+	if(3 == logrus_check())
+		var/obj/item/logrus/rein/logrus = get_active_hand()
+		if(logrus)
+			var/obj/item/logrus/probe/probe = logrus.probe
+			probe.logrus_Click(A, params)
 
 	var/list/modifiers = params2list(params)
 	if(modifiers["shift"] && modifiers["ctrl"])
@@ -157,6 +163,10 @@
 
 // Default behavior: ignore double clicks, consider them normal clicks instead
 /mob/proc/DblClickOn(var/atom/A, var/params)
+	if(3 == logrus_check())
+		var/obj/item/logrus/probe/logrus = get_active_hand()
+		if(logrus)
+			logrus.logrus_DblClick(A, params)
 	ClickOn(A,params)
 
 /*

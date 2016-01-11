@@ -144,6 +144,8 @@
 			if(item_in_hand:wielded == 1)
 				usr << "<span class='warning'>Your other hand is too busy holding the [item_in_hand.name]</span>"
 				return
+		if(istype(item_in_hand, /obj/item/logrus/probe))
+			src.client.eye = src
 	src.hand = !( src.hand )
 	if(hud_used.l_hand_hud_object && hud_used.r_hand_hud_object)
 		if(hand)	//This being 1 means the left hand is in use
@@ -152,6 +154,9 @@
 		else
 			hud_used.l_hand_hud_object.icon_state = "hand_inactive"
 			hud_used.r_hand_hud_object.icon_state = "hand_active"
+	if(istype(src.get_active_hand(), /obj/item/logrus/probe))
+		var/obj/item/logrus/probe/probe = src.get_active_hand()
+		src.client.eye = probe
 	/*if (!( src.hand ))
 		src.hands.set_dir(NORTH)
 	else
@@ -170,6 +175,10 @@
 
 	if(selhand != src.hand)
 		swap_hand()
+	else
+		if(2 == logrus_check())
+			var/obj/effect/proc_holder/logrus/spellcraft/logrus = get_logrus()
+			logrus.pick_sprout()
 
 /mob/living/carbon/proc/help_shake_act(mob/living/carbon/M)
 	if (src.health >= config.health_threshold_crit)

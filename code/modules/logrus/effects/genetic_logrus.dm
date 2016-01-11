@@ -26,11 +26,11 @@
 	return
 
 /obj/effect/proc_holder/logrus/genetic/setting(mob/M as mob, text)
-	if(mutation)
+	if(src/mutation)
 		return 0
 	switch(text)
-		if("hallucinations") 	mutation += mHallucination
-		if("hulk") 				mutation += HULK
-		if("laser") 			mutation += LASER
+		if("hallucinations") 	mutation = mHallucination
+		if("hulk") 				mutation = HULK
+		if("laser") 			mutation = LASER
 		else return 0
 	return 1
