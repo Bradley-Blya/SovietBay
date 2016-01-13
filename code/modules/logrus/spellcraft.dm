@@ -1,4 +1,4 @@
-/obj/effect/proc_holder/logrus/spellcraft
+/obj/logrus/spellcraft
 	name = "Logrus"
 	desc = "Summon it!"  //2/(1+(x/50))
 	//icon = 'icons/effects/magic.dmi'
@@ -9,42 +9,31 @@
 	var/vocation_spell = ""							//Text, wich will activate the spell
 	var/spell_name = "name"							//The name of the spell
 	var/effects = list()							//Spell effects, wich will be added to the spell
-	var/obj/effect/proc_holder/logrus/effect		//spell effect. Will be added to effects list of the spell
+	var/obj/logrus/effect/effect		//spell effect. Will be added to effects list of the spell
 	var/option = "main"
 
 mob/Stat()
 	..()
-	for(var/obj/effect/proc_holder/logrus/spellcraft/S in contents)
+	for(var/obj/logrus/spellcraft/S in contents)
 		statpanel("logrus", "[S][round(S.mana, 1)]", S)
 
 mob/verb/gl() // TESTING PURPOSES
 	set usr = src
 
-	new/obj/effect/proc_holder/logrus/spellcraft(usr)
+	new/obj/logrus/spellcraft(usr)
 
 mob/proc/logrus_check()
 	if(istype(get_active_hand(), /obj/item/logrus/rein)) return 3
-	var/obj/effect/proc_holder/logrus/spellcraft/logrus = locate() in src
+	var/obj/logrus/spellcraft/logrus = locate() in src
 	if(logrus)
 		if(logrus.stage)	return 2
 		else 				return 1
 	else 					return 0
 
-
-mob/proc/get_logrus()
-	var/obj/effect/proc_holder/logrus/spellcraft/logrus = locate() in src
-	return logrus
-
-
-mob/proc/get_logrus_probe()
-	var/obj/item/logrus/rein/rein = locate() in src
-	return rein.probe
-
-
-/*/obj/effect/proc_holder/logrus/spellcraft/see_emote(mob/M as mob, text)
+/*/obj/logrus/spellcraft/see_emote(mob/M as mob, text)
 	if(*/
 
-/obj/effect/proc_holder/logrus/spellcraft/Click()
+/obj/logrus/spellcraft/Click()
 	if(usr == caster)
 		toggle()
 
@@ -55,11 +44,11 @@ mob/proc/get_logrus_probe()
 	layer = 17
 	mouse_opacity = 0
 
-/obj/effect/proc_holder/logrus/spellcraft/proc/toggle()
+/obj/logrus/spellcraft/proc/toggle()
 	if(stage)
 		stage = 0
-		/*if(istype(effect, /obj/effect/proc_holder/logrus/shpt))
-			var/obj/effect/proc_holder/logrus/shpt/E = effect
+		/*if(istype(effect, /obj/logrus/shpt))
+			var/obj/logrus/shpt/E = effect
 			E.effects = effects
 			E.name = spell_name*/
 		effects = list()
@@ -77,7 +66,7 @@ mob/proc/get_logrus_probe()
 /////////////////////////////////////////////////////////////////////////////////////
 ////////////////////Main spellcrafting proc./////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
-/obj/effect/proc_holder/logrus/spellcraft/hear_talk(mob/M as mob, text)
+/obj/logrus/spellcraft/hear_talk(mob/M as mob, text)
 	if(caster != M)	//Other people ignored.
 		return
 
@@ -96,13 +85,13 @@ mob/proc/get_logrus_probe()
 	return
 
 //stage 0
-/obj/effect/proc_holder/logrus/spellcraft/proc/begin_cast(mob/M as mob, text)//not used for now
-	if(active)//text == "start" || text == "begin" || text == "initiate")
+/*obj/logrus/spellcraft/proc/begin_cast(mob/M as mob, text)//not used for now
+	if(stage)//text == "start" || text == "begin" || text == "initiate")
 		stage = 1
-		effects = list()
+		effects = list()*/
 
 //stage 1
-/obj/effect/proc_holder/logrus/spellcraft/proc/Spell_name(mob/M as mob, text)//gives a name to the spell
+/obj/logrus/spellcraft/proc/Spell_name(mob/M as mob, text)//gives a name to the spell
 	if(text && lentext(text) <= 30)
 		var/list/replacechars = list("\"" = "",">" = "","<" = "","(" = "",")" = "", "-" = " ", "_" = " ")
 		text = replace_characters(text, replacechars)
@@ -111,28 +100,27 @@ mob/proc/get_logrus_probe()
 		stage = 2
 
 //stage 2
-/obj/effect/proc_holder/logrus/spellcraft/proc/effect(mob/M as mob, text)//So adding effects.
+/obj/logrus/spellcraft/proc/effect(mob/M as mob, text)//So adding effects.
 	switch(text)
 
 		//The actual effects.
-		if("genetic") 		effect = new /obj/effect/proc_holder/logrus/genetic(M) 		//genetic@123
-		if("infliction") 	effect = new /obj/effect/proc_holder/logrus/infliction(M)	//infliction@123
+		if("infliction") 	effect = new /obj/logrus/effect/infliction(M)	//infliction@123
 
 
 		//The way, how the effects from above are being delivered to their targets, eg. fireball or trigger.
-		if("imposition") 	effect = new /obj/effect/proc_holder/logrus/shpt/imposition(M) //imposition@123
+		if("imposition") 	effect = new /obj/logrus/effect/targeted/shpt/imposition(M) //imposition@123
 
 		else
 			wrongword(M, text)
 
 
-	if(istype(effect, /obj/effect/proc_holder/logrus/shpt))
-		var/obj/effect/proc_holder/logrus/shpt/E = effect
+	if(istype(effect, /obj/logrus/effect/targeted/shpt))
+		var/obj/logrus/effect/targeted/shpt/E = effect
 		for(var/EF in effects)
 			E.contents += EF
-		E.effects = effects
+//		E.effects = effects
 		effects = E
-	else if(istype(effect, /obj/effect/proc_holder/logrus))
+	else if(istype(effect, /obj/logrus))
 		effects += effect
 
 	stage = 3
@@ -140,7 +128,7 @@ mob/proc/get_logrus_probe()
 	addletter(text)
 
 //stage 3
-/obj/effect/proc_holder/logrus/spellcraft/setting(mob/M as mob, text)//Here we adjust effects' vars.
+/obj/logrus/spellcraft/proc/setting(mob/M as mob, text)//Here we adjust effects' vars.
 	if(subeffects_words.Find(text,1,0) || modifiers_words.Find(1,0))//Magnitude is the amount of mana the effect will be using.//This thing only adjusts stage.
 		if(!isspell(effect))
 			log_debug("it's not a spell in logrus.dm on [__LINE__]")
@@ -161,17 +149,17 @@ mob/proc/get_logrus_probe()
 		//compile_effect(M)
 	else wrongword(M, text)
 
-/obj/effect/proc_holder/logrus/spellcraft/proc/addletter(text)
+/obj/logrus/spellcraft/proc/addletter(text)
 	var/L
 	L = copytext(text,1,2)
 	vocation_spell += L
 	world << "[vocation_spell]"
 	return L
 
-/obj/effect/proc_holder/logrus/spellcraft/proc/addspace()
+/obj/logrus/spellcraft/proc/addspace()
 	vocation_spell += " "
 
-/obj/effect/proc_holder/logrus/spellcraft/proc/wrongword()
+/obj/logrus/spellcraft/proc/wrongword()
 	caster << "<span class='warning'>You feel some magic energy dissipating into nowhere.</span>"
 	text = ""
 	transfer(10)
@@ -181,19 +169,16 @@ mob/proc/get_logrus_probe()
 
 
 ////////////////////////wordlists///////////////////////////////////////////////////////////////////////////
-var/obj/effect/proc_holder/logrus/list/starting_words = list("start", "begin", "initiate")
-var/obj/effect/proc_holder/logrus/list/effects_words = list("genetic", "imposition", "infliction")
-var/obj/effect/proc_holder/logrus/list/subeffects_words = list(
+var/obj/logrus/list/starting_words = list("start", "begin", "initiate")
+var/obj/logrus/list/effects_words = list("genetic", "imposition", "infliction")
+var/obj/logrus/list/subeffects_words = list(
 "hallucinations", "hulk", "laser",												//genetic
 "brute", "burn", "oxygen", "toxins", "stun", "paralyse", "weaken",				//infliction
 "select", "point", "human", "living", "robot")									//imposition
-var/obj/effect/proc_holder/logrus/list/modifiers_words = list(
+var/obj/logrus/list/modifiers_words = list(
 
 "duration")
 var/list/magnitude_mod = list("halveten" = 5, "singleten" = 10, "doubleten" = 20, "fivehalveten" = 25, "stretch", "snail")
 //####,
 
-//TODO: Переписать код триггера и маджикмиссела. Нужно определение целей и вызов спеллов получше.
-//		Окей, есть вызов и определение. Теперь мана. И все это вставить в спелкрафт.
-//		Спелкрафт - говно. Перепилить спелкрафт.
-//		Окей, настройку эффектов переносим в сами эффекты.
+//TODO: Все заклинания в ебеня.

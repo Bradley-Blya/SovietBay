@@ -1,4 +1,4 @@
-/obj/effect/proc_holder/logrus/proc/mana()
+/obj/logrus/proc/mana()
 	var/started = world.timeofday
 	var/chargedtime
 	var/y
@@ -16,7 +16,34 @@
 		chargedtime = (world.timeofday - started)
 		world << "[y]---[mana]---[chargedtime]"
 
-/obj/effect/proc_holder/logrus/proc/consume(amt, t = 1)
+/obj/logrus/spellcraft/mana()//
+	var/started = world.timeofday
+	var/chargedtime
+
+	var/manainc
+	while(1)
+		sleep(1)
+		if(stage)
+			continue
+
+		manainc = M() + K() + L()
+		if(manainc < 0.1)
+			continue
+		manainc = round(manainc,0.001)
+		mana += manainc
+
+		chargedtime = (world.timeofday - started)
+		world << "[manainc]---[mana]---[chargedtime]"
+
+/obj/logrus/spellcraft
+	proc/M()
+		return (-(10*L()/(mana+5))**0.38)
+	proc/K()
+		return (-((0.014*mana)**2))
+	proc/L()
+		return 10
+
+/obj/logrus/proc/consume(amt, t = 1)
 	if(mana < amt)
 		if(t)
 			sip(amt -  mana)	//so we add the mana we need.
@@ -28,44 +55,44 @@
 	world << "[amt] consumed by [name]"
 	return amt
 
-/obj/effect/proc_holder/logrus/proc/sip(amt, t = 0)
+/obj/logrus/proc/sip(amt, t = 0)
 	if(!t)
 		t = transfer_penalty(source)
 	if(isspell(source))
-		amt = t*source:consume(amt, 1)
+		var/obj/logrus/spellcraft/S = source
+		amt = t*S.consume(amt, 1)
 	else
-		for(var/obj/effect/proc_holder/logrus/spellcraft/S in source)
+		for(var/obj/logrus/spellcraft/S in source)
 			amt = t*S.consume(amt, 1)
 
 	mana += amt
 	return amt
 
-/obj/effect/proc_holder/logrus/proc/transfer(target, amt, t = 0)
-	var T
+/obj/logrus/proc/transfer(target, amt, t = 0)
+	var/obj/logrus/T
 
 	if(!t)
 		t = transfer_penalty(target)
 
-	if(isspell(target))
-		T = target
+	if(isspell(target)) T = target
 	else
-		for(var/obj/effect/proc_holder/logrus/spellcraft/l in target)
+		for(var/obj/logrus/spellcraft/l in target)
 			T = l
 
 	if(T)
-		T:mana += t*consume(amt, 0)
+		T.mana += t*consume(amt, 0)
 		return 1
 
 	return 0
 
 
-/obj/effect/proc_holder/logrus/proc/transfer_penalty(target)
+/obj/logrus/proc/transfer_penalty(target)
 	var r
 	var penalty
 	r = get_dist(src, target)
 
 	switch(r)
-		if(0 to 10)
+		if(2 to 10)
 			penalty = 1.5*r
 		if(11 to 30)
 			penalty = (1.3*(r+1))
@@ -76,34 +103,7 @@
 	penalty = 1 - penalty/100
 	return penalty
 
-/obj/effect/proc_holder/logrus/spellcraft/mana()//
-	var/started = world.timeofday
-	var/chargedtime
 
-	var/manainc
-	while(1)
-		sleep(1)
-		if(active) continue
-
-		manainc = M() + K() + L()
-		if(manainc < 0.1)
-			continue
-		manainc = round(manainc,0.001)
-		mana += manainc
-
-		chargedtime = (world.timeofday - started)
-		world << "[manainc]---[mana]---[chargedtime]"
-		stat("Mana",mana)
-		if(manainc < 0.01)
-		stat("Mana",mana)
-
-/obj/effect/proc_holder/logrus/spellcraft
-	proc/M()
-		return (-(10*L()/(mana+5))**0.38)
-	proc/K()
-		return (-((0.014*mana)**2))
-	proc/L()
-		return 10
 
 
 /*obj/effect/proc_holder/logrus/spellcraft/consume(amt, t)

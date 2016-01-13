@@ -1,4 +1,5 @@
-/obj/effect/proc_holder/logrus/genetic
+/////////////////////////////////////////////////////////////////////////////////////////////
+/obj/logrus/effect/genetic
 	name = "Genetic"
 	desc = "This spell inflicts a set of mutations and disabilities upon the target."
 
@@ -15,7 +16,7 @@
 			6th bit - ?
 	*/
 
-/obj/effect/proc_holder/logrus/genetic/cast(mob/living/target)
+/obj/logrus/effect/genetic/perform(mob/living/target)
 	target.mutations.Add(mutation)
 	target.disabilities |= disabilities
 	target.update_mutations()	//update target's mutation overlays
@@ -25,7 +26,7 @@
 		target.update_mutations()
 	return
 
-/obj/effect/proc_holder/logrus/genetic/setting(mob/M as mob, text)
+/obj/logrus/effect/genetic/setting(mob/M as mob, text)
 	if(src/mutation)
 		return 0
 	switch(text)

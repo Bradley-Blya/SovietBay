@@ -3,7 +3,8 @@
 	desc = "Yellow glowing transparent thing it the air"
 	icon = 'icons/effects/logrus/probe.dmi'
 	icon_state = "logrus"
-	layer = 3
+	level = 2
+	layer = 2.1
 	density = 0
 	anchored = 1
 	var/atom/movable/focus = null
@@ -33,6 +34,7 @@
 		while(beam)
 			Beam(caster, time = 1)
 			sleep(1)
+
 	Del()
 		beam = 0
 		sleep(1)
@@ -42,8 +44,14 @@
 
 /*obj/item/logrus/probe/ClickOn()
 	return*/
+/mob/proc/PickSprout()
+	if(2 == logrus_check())
+		var/obj/logrus/spellcraft/logrus = locate() in src
+		logrus.pick_sprout()
 
-/obj/effect/proc_holder/logrus/spellcraft/proc/pick_sprout()
+
+
+/obj/logrus/spellcraft/proc/pick_sprout()
 	var/obj/item/logrus/probe/probe = new/obj/item/logrus/probe(caster.loc)
 	var/obj/item/logrus/rein/rein = new/obj/item/logrus/rein(caster)
 	caster.put_in_active_hand(rein)

@@ -176,9 +176,7 @@
 	if(selhand != src.hand)
 		swap_hand()
 	else
-		if(2 == logrus_check())
-			var/obj/effect/proc_holder/logrus/spellcraft/logrus = get_logrus()
-			logrus.pick_sprout()
+		src.PickSprout()
 
 /mob/living/carbon/proc/help_shake_act(mob/living/carbon/M)
 	if (src.health >= config.health_threshold_crit)

@@ -267,8 +267,7 @@
 			W.attack_self(src)
 			update_inv_l_hand()
 		else
-			var/obj/effect/proc_holder/logrus/spellcraft/logrus = get_logrus()
-			logrus.pick_sprout()
+			src.PickSprout()
 	else
 		var/obj/item/W = r_hand
 		if (W)
