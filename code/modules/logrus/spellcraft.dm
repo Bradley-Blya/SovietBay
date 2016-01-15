@@ -15,7 +15,7 @@
 mob/Stat()
 	..()
 	for(var/obj/logrus/spellcraft/S in contents)
-		statpanel("logrus", "[S][round(S.mana, 1)]", S)
+		statpanel("Logrus", "Magic Power: [round(S.mana, 1)]", S)
 
 mob/verb/gl() // TESTING PURPOSES
 	set usr = src

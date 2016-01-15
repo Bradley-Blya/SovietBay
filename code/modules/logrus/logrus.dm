@@ -61,10 +61,9 @@
 	probe.rein = rein
 	rein.probe = probe
 	caster.reset_view(probe)
-
-	probe.Probe_Beam()
+	probe.SpinAnimation(speed = 40, loops = -1)
 	spawn(0)
-		probe.SpinAnimation(speed = 40, loops = -1)
+		probe.Probe_Beam()
 
 
 
