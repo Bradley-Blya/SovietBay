@@ -5,3 +5,22 @@
 	var/dmgtype
 
 /obj/logrus/effect/infliction/perform()
+	mana = ..()
+	if(!(ismob(loc) || isobj(loc) || isturf(loc)))
+		return
+
+	var/atom/holder = loc
+	waste += holder.infliction(src, mana)
+
+/atom/proc/infliction()
+	return 0
+
+/mob/living/infliction(spell, mana, dmgtype)
+	switch(dmgtype)
+		if("brute")
+
+			adjustBruteLoss(mana)
+		if("burn")
+
+			adjustFireLoss(mana)
+

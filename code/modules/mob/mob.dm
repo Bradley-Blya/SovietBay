@@ -267,7 +267,7 @@
 			W.attack_self(src)
 			update_inv_l_hand()
 		else
-			src.PickSprout()
+			src.pick_sprout()
 	else
 		var/obj/item/W = r_hand
 		if (W)

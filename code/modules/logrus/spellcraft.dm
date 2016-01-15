@@ -30,6 +30,15 @@ mob/proc/logrus_check()
 		else 				return 1
 	else 					return 0
 
+
+mob/proc/get_logrus()//this will be needed when staff mages introduced
+	var/obj/logrus/spellcraft/logrus = locate() in src
+	return logrus
+
+mob/proc/get_logrus_probe()//this will be needed when staff mages introduced
+	var/obj/item/logrus/rein/rein = locate() in src
+	return rein.probe
+
 /*/obj/logrus/spellcraft/see_emote(mob/M as mob, text)
 	if(*/
 

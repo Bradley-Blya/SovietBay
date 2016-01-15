@@ -177,7 +177,7 @@
 	if(selhand != src.hand)
 		swap_hand()
 	else
-		src.PickSprout()
+		src.pick_sprout()
 
 /mob/living/carbon/proc/help_shake_act(mob/living/carbon/M)
 	if (src.health >= config.health_threshold_crit)

@@ -36,12 +36,21 @@
 /obj/logrus/effect
 	var/focus
 	var/detoration
+	var/waste
+	var/mana_usefull //or i dont need this?
 
-	proc/perform(var/mana as num)
+/obj/logrus/effect/proc/perform()
+		var/loss1 = mana*(1-(100+((-0.5)*(detoration)))/100)
+		var/loss2 = mana*(1-(100+((-0.5)*(detoration+mana)))/100)
+		waste = (loss1+loss2)/2
+		mana -= waste
+	//	waste = round(waste, 1)
+	//	mana = round(mana, 1)
+
+
+/obj/logrus/effect/proc/setting(mob/M as mob, text)
 		return
-	proc/setting(mob/M as mob, text)
-		return
-	proc/trigger()
+/obj/logrus/effect/proc/trigger()
 		return
 
 /obj/logrus/effect/targeted

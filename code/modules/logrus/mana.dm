@@ -1,5 +1,6 @@
 /obj/logrus/proc/mana()
-	var/started = world.timeofday
+	return
+	/*var/started = world.timeofday
 	var/chargedtime
 	var/y
 	var/x
@@ -14,7 +15,7 @@
 		y = round(y,0.001)
 		mana -= y
 		chargedtime = (world.timeofday - started)
-		world << "[y]---[mana]---[chargedtime]"
+		world << "[y]---[mana]---[chargedtime]"*/
 
 /obj/logrus/spellcraft/mana()//
 	var/started = world.timeofday
@@ -37,11 +38,13 @@
 
 /obj/logrus/spellcraft
 	proc/M()
-		return (-(10*L()/(mana+5))**0.38)
+		return (-(1/L()*10000/(mana+5))**0.38)
 	proc/K()
 		return (-((0.014*mana)**2))
 	proc/L()
 		return 10
+	proc/S()
+		return
 
 /obj/logrus/proc/consume(amt, t = 1)
 	if(mana < amt)
@@ -68,7 +71,7 @@
 	mana += amt
 	return amt
 
-/obj/logrus/proc/transfer(target, amt, t = 0)
+/obj/logrus/proc/Transfer(target, amt, t = 0)
 	var/obj/logrus/T
 
 	if(!t)
@@ -84,6 +87,16 @@
 		return 1
 
 	return 0
+
+/obj/logrus/proc/transfer(target, amt, var/t = 0)
+	var/obj/logrus/T
+//	T = get_logrus()
+	if(!t)
+		t = transfer_penalty(target)
+
+
+
+
 
 
 /obj/logrus/proc/transfer_penalty(target)
