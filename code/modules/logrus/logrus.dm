@@ -36,6 +36,7 @@
 			sleep(1)
 
 	Del()
+		caster.reset_view()
 		beam = 0
 		sleep(1)
 		..()
@@ -59,10 +60,11 @@
 	rein.caster = caster
 	probe.rein = rein
 	rein.probe = probe
+	caster.reset_view(probe)
 
 	probe.Probe_Beam()
-	probe.SpinAnimation(speed = 40, loops = -1)
-	caster.client.eye = src
+	spawn(0)
+		probe.SpinAnimation(speed = 40, loops = -1)
 
 
 

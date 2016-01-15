@@ -1392,6 +1392,9 @@
 					reset_view(null)
 				else
 					src.sight |= SEE_TURFS|SEE_MOBS|SEE_OBJS
+			else if(logrus_check() && istype(get_active_hand(),/obj/item/logrus/rein))
+				//var/obj/item/logrus/rein/rein = get_active_hand()
+				//reset_view(rein.probe, 0)
 			else
 				var/isRemoteObserve = 0
 				if((mRemote in mutations) && remoteview_target)
