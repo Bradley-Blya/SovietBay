@@ -29,12 +29,6 @@
 	var/obj/pulled
 	var/beam
 
-	proc/Probe_Beam()
-		beam = 1
-		while(beam)
-			Beam(caster, time = 1)
-			sleep(1)
-
 	Del()
 		caster.reset_view()
 		beam = 0
@@ -61,9 +55,8 @@
 	probe.rein = rein
 	rein.probe = probe
 	caster.reset_view(probe)
+
 	probe.SpinAnimation(speed = 40, loops = -1)
-	spawn(0)
-		probe.Probe_Beam()
 
 
 
