@@ -1070,6 +1070,7 @@
 #include "code\modules\logrus\logrus_main.dm"
 #include "code\modules\logrus\mana.dm"
 #include "code\modules\logrus\spellcraft.dm"
+#include "code\modules\logrus\effects\genetic_logrus.dm"
 #include "code\modules\logrus\effects\infliction.dm"
 #include "code\modules\logrus\shpt\imposition.dm"
 #include "code\modules\maps\dmm_suite.dm"
@@ -1729,3 +1730,5 @@
 #include "maps\exodus-5.dmm"
 #include "maps\exodus-6.dmm"
 // END_INCLUDE
+
+

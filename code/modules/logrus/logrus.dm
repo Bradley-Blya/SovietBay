@@ -44,9 +44,9 @@
 
 /*obj/item/logrus/probe/ClickOn()
 	return*/
-/mob/proc/PickSprout()
+/mob/proc/pick_sprout()
 	if(2 == logrus_check())
-		var/obj/logrus/spellcraft/logrus = locate() in src
+		var/obj/logrus/spellcraft/logrus = get_logrus()//this will be needed when staff mages introduced
 		logrus.pick_sprout()
 
 
