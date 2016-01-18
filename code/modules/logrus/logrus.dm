@@ -32,7 +32,7 @@
 	proc/Probe_Beam()
 		beam = 1
 		while(beam)
-			Beam(caster, time = 1)
+			Beam(caster, time = 1, max_distance = 100)
 			sleep(1)
 
 	Del()
