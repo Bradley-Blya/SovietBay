@@ -18,7 +18,7 @@
 
 	var/mana				//So any spell can be charged with mana
 	var/mob/caster			//Like admin access to the spell
-	var/source				//Where the spell takes power
+	var/obj/logrus/source				//Where the spell takes power
 
 /obj/logrus/Click()
     return
@@ -30,44 +30,52 @@
 	spawn(0)
 		mana()
 
-/obj/logrus/Destroy()
+/obj/logrus/Destroy()//yep, i need this
 	del src
 
 /obj/logrus/effect
-	var/focus
-	var/detoration
-	var/waste
-	var/mana_usefull //or i dont need this?
+	var/focus			//how user affects the waste of the spell
+	var/detoration		//how much mana passed through the spell
+	var/waste			//how much mana is wasted by the spell
+	var/constraint		//how much mana costs the spells vocation,
+	var/obj/logrus/effect/auxilary/auxilary		//an auxilary spell one per effect
 
 /obj/logrus/effect/proc/perform()
-		var/loss1 = mana*(1-(100+((-0.5)*(detoration)))/100)
-		var/loss2 = mana*(1-(100+((-0.5)*(detoration+mana)))/100)
-		waste = (loss1+loss2)/2
-		mana -= waste
-	//	waste = round(waste, 1)
-	//	mana = round(mana, 1)
+	conversion()					//this calculates how much mana is wasted due to imperfection of the spell, or if it's going to work at all
+	cast()						//this is the actual spell in acion
+	trigger()						//here spell handles spells inside of it
 
+/obj/logrus/effect/proc/conversion()
+	var/loss1 = mana*(1-(100+((-0.5)*(detoration)))/100)
+	var/loss2 = mana*(1-(100+((-0.5)*(detoration+mana)))/100)
+	waste = (loss1+loss2)/2
+	mana -= waste
+//	waste = round(waste, 1)
+//	mana = round(mana, 1)
+
+/obj/logrus/effect/proc/cast()
+	return
+
+/obj/logrus/effect/proc/cost()
+	return
+
+/obj/logrus/effect/proc/trigger()
+	return
 
 /obj/logrus/effect/proc/setting(mob/M as mob, text)
-		return
-/obj/logrus/effect/proc/trigger()
-		return
+	return
 
+/obj/logrus/effect/Del()
+	for(var/obj/logrus/effect/S in contents)
+		S.loc = loc
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /obj/logrus/effect/targeted
-	perform(var/mana as num, var/target as mob|obj|turf)
-		return
+	var/target
+
 
 /obj/logrus/effect/targeted/shpt
-	perform(var/mana as num, var/target as mob|obj|turf)
-		for(var/obj/logrus/effect/E in src.contents)
-			E.trigger()
-
-/obj/logrus/effect/targeted/auxilary
-
-	trigger
-
-	drainer
-
 
 
 

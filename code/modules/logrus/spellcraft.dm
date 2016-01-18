@@ -39,7 +39,7 @@ mob/proc/get_logrus_probe()//this will be needed when staff mages introduced
 	var/obj/item/logrus/rein/rein = locate() in src
 	return rein.probe
 
-/*/obj/logrus/spellcraft/see_emote(mob/M as mob, text)
+/*/obj/logrus/spellcraft/see_emote(mob/M, text)
 	if(*/
 
 /obj/logrus/spellcraft/Click()
@@ -75,7 +75,7 @@ mob/proc/get_logrus_probe()//this will be needed when staff mages introduced
 /////////////////////////////////////////////////////////////////////////////////////
 ////////////////////Main spellcrafting proc./////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
-/obj/logrus/spellcraft/hear_talk(mob/M as mob, text)
+/obj/logrus/spellcraft/hear_talk(mob/M, text)
 	if(caster != M)	//Other people ignored.
 		return
 
@@ -94,13 +94,13 @@ mob/proc/get_logrus_probe()//this will be needed when staff mages introduced
 	return
 
 //stage 0
-/*obj/logrus/spellcraft/proc/begin_cast(mob/M as mob, text)//not used for now
+/*obj/logrus/spellcraft/proc/begin_cast(mob/M, text)//not used for now
 	if(stage)//text == "start" || text == "begin" || text == "initiate")
 		stage = 1
 		effects = list()*/
 
 //stage 1
-/obj/logrus/spellcraft/proc/Spell_name(mob/M as mob, text)//gives a name to the spell
+/obj/logrus/spellcraft/proc/Spell_name(mob/M, text)//gives a name to the spell
 	if(text && lentext(text) <= 30)
 		var/list/replacechars = list("\"" = "",">" = "","<" = "","(" = "",")" = "", "-" = " ", "_" = " ")
 		text = replace_characters(text, replacechars)
@@ -109,7 +109,7 @@ mob/proc/get_logrus_probe()//this will be needed when staff mages introduced
 		stage = 2
 
 //stage 2
-/obj/logrus/spellcraft/proc/effect(mob/M as mob, text)//So adding effects.
+/obj/logrus/spellcraft/proc/effect(mob/M, text)//So adding effects.
 	switch(text)
 
 		//The actual effects.
@@ -127,7 +127,6 @@ mob/proc/get_logrus_probe()//this will be needed when staff mages introduced
 		var/obj/logrus/effect/targeted/shpt/E = effect
 		for(var/EF in effects)
 			E.contents += EF
-//		E.effects = effects
 		effects = E
 	else if(istype(effect, /obj/logrus))
 		effects += effect
@@ -137,19 +136,37 @@ mob/proc/get_logrus_probe()//this will be needed when staff mages introduced
 	addletter(text)
 
 //stage 3
-/obj/logrus/spellcraft/proc/setting(mob/M as mob, text)//Here we adjust effects' vars.
-	if(subeffects_words.Find(text,1,0) || modifiers_words.Find(1,0))//Magnitude is the amount of mana the effect will be using.//This thing only adjusts stage.
-		if(!isspell(effect))
-			log_debug("it's not a spell in logrus.dm on [__LINE__]")
-			return
-		if(effect.setting(M, text))
-			log_debug("thats 1 in spellcraft on [__LINE__]")
-		else
-			log_debug("thats 0 in spellcraft on [__LINE__]")
-			wrongword(M, text)
+/obj/logrus/spellcraft/proc/setting(mob/M, text)//Here we adjust effects' vars.
+	var/r
+	if(text == "'")
+		option = "main"
 
+	if(magnitude_mod.Find(text))			//Magnitude assigns a value to the option.
 
-	else if(magnitude_mod.Find(text,1,0))
+		if(subeffects_words.Find(option))	//so its the effects option
+			r = effect.setting(M, text, option)
+			if(!isnum(r))
+				wrongword(M, text)
+
+		if(auxilary_words.Find(option))		//so its an effects' auxilary spell option
+			r = effect.auxilary.setting(M, text, option)
+			if(!isnum(r))
+				wrongword(M, text)
+
+	if(subeffects_words.Find(text))			//Here we choose wich option to edit
+
+		if(subeffects_words.Find(option))	//so its the effects option
+			r = effect.setting(M, text, option)
+			if(!istext(r))
+				wrongword(M, text)
+
+		if(auxilary_words.Find(option))		//so its an effects' auxilary spell option
+			if(!effect.auxilary)
+				effect.auxilary = new /obj/logrus/effect/auxilary/drainer(effect)
+			r = effect.auxilary.setting(M, text, option)
+			if(!istext(r))
+				wrongword(M, text)
+
 
 
 	else if(effects_words.Find(text,1,0))//When the next effect is being called, this one needs to be compilated.
@@ -158,11 +175,16 @@ mob/proc/get_logrus_probe()//this will be needed when staff mages introduced
 		//compile_effect(M)
 	else wrongword(M, text)
 
+
+/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 /obj/logrus/spellcraft/proc/addletter(text)
 	var/L
 	L = copytext(text,1,2)
+	effect.vocation += L
 	vocation_spell += L
-	world << "[vocation_spell]"
+	caster << "<span class='notice'>[vocation_spell]</span>"
+	effect.constraint += 1
 	return L
 
 /obj/logrus/spellcraft/proc/addspace()
@@ -173,21 +195,18 @@ mob/proc/get_logrus_probe()//this will be needed when staff mages introduced
 	text = ""
 	transfer(10)
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////100/////////////////////////////////////////////////////////////////////////////////
-
-
 ////////////////////////wordlists///////////////////////////////////////////////////////////////////////////
 var/obj/logrus/list/starting_words = list("start", "begin", "initiate")
 var/obj/logrus/list/effects_words = list("genetic", "imposition", "infliction")
 var/obj/logrus/list/subeffects_words = list(
-"hallucinations", "hulk", "laser",												//genetic
+//"hallucinations", "hulk", "laser",												//genetic
 "brute", "burn", "oxygen", "toxins", "stun", "paralyse", "weaken",				//infliction
-"select", "point", "human", "living", "robot")									//imposition
-var/obj/logrus/list/modifiers_words = list(
+"range", "part", "living", "robot",
+)									//imposition //16 parts, two to choose 4legs 4hands 2body head eyes brain heart lungs
+var/obj/logrus/list/auxilary_words = list(
+"magnitude", "step", "extension"
+)
+var/obj/logrus/list/magnitude_mod = list("halveten" = 5, "singleten" = 10, "doubleten" = 20, "fivehalveten" = 25)
 
-"duration")
-var/list/magnitude_mod = list("halveten" = 5, "singleten" = 10, "doubleten" = 20, "fivehalveten" = 25, "stretch", "snail")
-//####,
 
 //TODO: Все заклинания в ебеня.

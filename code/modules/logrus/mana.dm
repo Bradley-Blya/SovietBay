@@ -1,5 +1,10 @@
 /obj/logrus/proc/mana()
 	return
+/obj/logrus/effect/mana()
+	for(sleep(1))
+		if(mana)
+			perform()
+		return
 	/*var/started = world.timeofday
 	var/chargedtime
 	var/y
@@ -46,31 +51,6 @@
 	proc/S()
 		return
 
-/obj/logrus/proc/consume(amt, t = 1)
-	if(mana < amt)
-		if(t)
-			sip(amt -  mana)	//so we add the mana we need.
-		amt = mana
-		mana = 0
-	else
-		mana -= amt
-
-	world << "[amt] consumed by [name]"
-	return amt
-
-/obj/logrus/proc/sip(amt, t = 0)
-	if(!t)
-		t = transfer_penalty(source)
-	if(isspell(source))
-		var/obj/logrus/spellcraft/S = source
-		amt = t*S.consume(amt, 1)
-	else
-		for(var/obj/logrus/spellcraft/S in source)
-			amt = t*S.consume(amt, 1)
-
-	mana += amt
-	return amt
-
 /obj/logrus/proc/Transfer(target, amt, t = 0)
 	var/obj/logrus/T
 
@@ -83,7 +63,7 @@
 			T = l
 
 	if(T)
-		T.mana += t*consume(amt, 0)
+		T.mana += t*amt
 		return 1
 
 	return 0
@@ -93,11 +73,6 @@
 //	T = get_logrus()
 	if(!t)
 		t = transfer_penalty(target)
-
-
-
-
-
 
 /obj/logrus/proc/transfer_penalty(target)
 	var r
@@ -115,9 +90,6 @@
 
 	penalty = 1 - penalty/100
 	return penalty
-
-
-
 
 /*obj/effect/proc_holder/logrus/spellcraft/consume(amt, t)
 	if(mana < amt)

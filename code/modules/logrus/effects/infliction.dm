@@ -4,8 +4,7 @@
 
 	var/dmgtype
 
-/obj/logrus/effect/infliction/perform()
-	mana = ..()
+/obj/logrus/effect/infliction/cast()
 	if(!(ismob(loc) || isobj(loc) || isturf(loc)))
 		return
 
@@ -18,9 +17,13 @@
 /mob/living/infliction(spell, mana, dmgtype)
 	switch(dmgtype)
 		if("brute")
-
 			adjustBruteLoss(mana)
 		if("burn")
-
 			adjustFireLoss(mana)
 
+/obj/logrus/effect/infliction/setting(mob/caster, text, option)
+	if(subeffects_words.Find(text))
+		switch(dmgtype)
+			if("brute")	dmgtype = text
+			if("burn")	dmgtype = text
+		return 1
