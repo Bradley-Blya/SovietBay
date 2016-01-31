@@ -79,19 +79,28 @@ mob/proc/get_logrus_probe()//this will be needed when staff mages introduced
 	if(caster != M)	//Other people ignored.
 		return
 
-	switch(stage)						//This is where stage is used.
-		//if(0) begin_cast(M, text)
+	var/success
+	//if(0) begin_cast(M, text)
+	//if(1) Spell_name(M, text)
+	if(!spell_name)
+		Spell_name(M, text)
 
-		if(1) Spell_name(M, text)
+	//if(2) effect(M, text)
+	if(text in effects_words)
+		effect(M, text)
 
-		if(2) effect(M, text)
+	if(text in auxilary_words && effect)
+		auxilary(M, text)
 
-		if(3) setting(M, text)
+	//if(3) setting(M, text)
+	if(text in subeffects_words && effect)
+		setting(M, text)
 
-		//if(4) magnitude(M, text)
+	//if(4) magnitude(M, text)
+	if(text in magnitude_mod && effect)
+		magnitude(M, text)
 
-		else log_debug("Stage bug, report it! [__LINE__]")
-	return
+	else wrongword(M, text)
 
 //stage 0
 /*obj/logrus/spellcraft/proc/begin_cast(mob/M, text)//not used for now
@@ -128,7 +137,7 @@ mob/proc/get_logrus_probe()//this will be needed when staff mages introduced
 		for(var/EF in effects)
 			E.contents += EF
 		effects = E
-	else if(istype(effect, /obj/logrus))
+	else if(istype(effect, /obj/logrus/effect))
 		effects += effect
 
 	stage = 3
@@ -141,39 +150,35 @@ mob/proc/get_logrus_probe()//this will be needed when staff mages introduced
 	if(text == "'")
 		option = "main"
 
-	if(magnitude_mod.Find(text))			//Magnitude assigns a value to the option.
+	if(subeffects_words.Find(option))	//so its the effects option
+		r = effect.setting(M, text, option)
+		if(!istext(r))
+			wrongword(M, text)
 
-		if(subeffects_words.Find(option))	//so its the effects option
-			r = effect.setting(M, text, option)
-			if(!isnum(r))
-				wrongword(M, text)
+/obj/logrus/spellcraft/proc/auxilary(mob/M, text)
+	var/r
+	if(!effect.auxilary)
+		effect.auxilary = new /obj/logrus/effect/auxilary/drainer(effect)
+	r = effect.auxilary.setting(M, text, option)
+	if(istext(r))
+		wrongword(M, text)
 
-		if(auxilary_words.Find(option))		//so its an effects' auxilary spell option
-			r = effect.auxilary.setting(M, text, option)
-			if(!isnum(r))
-				wrongword(M, text)
+/obj/logrus/spellcraft/proc/magnitude/(
+	if(subeffects_words.Find(option))	//so its the effects option
+		r = effect.setting(M, text, option)
+		if(!isnum(r))
+			wrongword(M, text)
 
-	if(subeffects_words.Find(text))			//Here we choose wich option to edit
-
-		if(subeffects_words.Find(option))	//so its the effects option
-			r = effect.setting(M, text, option)
-			if(!istext(r))
-				wrongword(M, text)
-
-		if(auxilary_words.Find(option))		//so its an effects' auxilary spell option
-			if(!effect.auxilary)
-				effect.auxilary = new /obj/logrus/effect/auxilary/drainer(effect)
-			r = effect.auxilary.setting(M, text, option)
-			if(!istext(r))
-				wrongword(M, text)
-
-
+	if(auxilary_words.Find(option))		//so its an effects' auxilary spell option
+		r = effect.auxilary.setting(M, text, option)
+		if(!isnum(r) && r)
+			wrongword(M, text)
 
 	else if(effects_words.Find(text,1,0))//When the next effect is being called, this one needs to be compilated.
 		effect(M, text)
 	//else if(text == "end")//End of spellcrafting, compiles the last effect.
 		//compile_effect(M)
-	else wrongword(M, text)
+	else
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -197,7 +202,7 @@ mob/proc/get_logrus_probe()//this will be needed when staff mages introduced
 
 ////////////////////////wordlists///////////////////////////////////////////////////////////////////////////
 var/obj/logrus/list/starting_words = list("start", "begin", "initiate")
-var/obj/logrus/list/effects_words = list("genetic", "imposition", "infliction")
+var/obj/logrus/list/effects_words = list("genetic", "imposition", "infliction", "trigger", "drainer", "container")
 var/obj/logrus/list/subeffects_words = list(
 //"hallucinations", "hulk", "laser",												//genetic
 "brute", "burn", "oxygen", "toxins", "stun", "paralyse", "weaken",				//infliction
