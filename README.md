@@ -1,7 +1,5 @@
 # United Kingdom of Soviet Station 13 (Baystation 12 Fork)
 
-[Вебсайт](http://sovietstation.ru/) - [Код](https://github.com/AndyAdjutor/SovietBay) - [Вики](http://wiki.sovietstation.ru/)
-
 ---
 !ВНИМАНИЕ! 
 Перед редактированием карты обязательно используйте mapmerge! Расположена по следующему пути: "/tools/mapmerge". Инструкция на русском находится там же.
@@ -64,4 +62,3 @@
 ### Установка SQL
 
 База SQL необходима для работы Библиотеки (методом MySQL) и статистики игроков. Для самой базы SQL необходим MySQL сервер. Конфигурация для БД SQL расположена здесь: "/config/dbconfig.txt", а схема БД SQL тут - /SQL/tgstation.schema.sql
-Более подробную информацию спрашивайте в нашем TeamSpeak
