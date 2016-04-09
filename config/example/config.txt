@@ -1,5 +1,5 @@
 ## Server name: This appears at the top of the screen in-game. In this case it will read "tgstation: station_name" where station_name is the randomly generated name of the station for the round. Remove the # infront of SERVERNAME and replace 'tgstation' with the name of your choice
-#SERVERNAME [RUS] Soviet Station 13
+#SERVERNAME Baystation12
 
 ## Alert levels
 ALERT_GREEN All threats to the station have passed. Security may not have weapons visible, privacy laws are once again fully enforced.
@@ -96,7 +96,7 @@ MODS_CAN_JOB_TEMPBAN
 #MOD_TEMPBAN_MAX 1440
 
 ## Maximum mod job tempban duration (in minutes)
-#OD_JOB_TEMPBAN_MAX 1440
+#MOD_JOB_TEMPBAN_MAX 1440
 
 
 ## probablities for game modes chosen in "secret" and "random" modes
@@ -195,7 +195,7 @@ ALLOW_AI
 # DONT_DEL_NEWMOB
 
 ## set a hosted by name for unix platforms
-HOSTEDBY Sovok
+#HOSTEDBY Sovok
 
 ## Set to jobban "Guest-" accounts from Captain, HoS, HoP, CE, RD, CMO, Warden, Security, Detective, and AI positions.
 ## Set to 1 to jobban them from those positions, set to 0 to allow them.
@@ -208,23 +208,24 @@ GUEST_BAN
 # USEWHITELIST
 
 ## set a server location for world reboot. Don't include the byond://, just give the address and port.
-SERVER lifestation.ru:4738
+#SERVER lifestation.ru:4738
 
 ## set a server URL for the IRC bot to use; like SERVER, don't include the byond://
 ## Unlike SERVER, this one shouldn't break auto-reconnect
 #SERVERURL server.net:port
 
+# На память оставлю
 ## forum address
-FORUMURL http://sovietstation.ru
+# FORUMURL http://sovietstation.ru
 
 ## Wiki address
-WIKIURL http://wiki.sovietstation.ru
+# WIKIURL http://wiki.sovietstation.ru
 
 ## GitHub address
 GITHUBURL https://github.com/AndyAdjutor/SovietBay
 
 ## Ban appeals URL - usually for a forum or wherever people should go to contact your admins.
-BANAPPEALS http://sovietstation.ru/index.php?showforum=7
+# BANAPPEALS http://sovietstation.ru/index.php?showforum=7
 
 ## In-game features
 ## spawns a spellbook which gives object-type spells instead of verb-type spells for the wizard
@@ -243,7 +244,7 @@ FORBID_SINGULO_POSSESSION
 ## Remove the # to allow special 'Easter-egg' events on special holidays such as seasonal holidays and stuff like 'Talk Like a Pirate Day' :3 YAARRR
 ALLOW_HOLIDAYS
 ##Defines the ticklag for the world.  0.9 is the normal one, 0.5 is smoother.
-TICKLAG 0.5
+TICKLAG 0.3
 
 ## Defines if Tick Compensation is used.  It results in a minor slowdown of movement of all mobs, but attempts to result in a level movement speed across all ticks.  Recommended if tickrate is lowered.
 # TICKCOMP 0
