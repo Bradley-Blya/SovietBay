@@ -43,7 +43,7 @@
 
 	. += "Backpack Type: <a href='?src=\ref[src];change_backpack=1'><b>[backbaglist[pref.backbag]]</b></a><br>"
 
-	return jointext(.)
+	return jointext(., "")
 
 /datum/category_item/player_setup_item/general/equipment/OnTopic(var/href,var/list/href_list, var/mob/user)
 	if(href_list["change_backpack"])
