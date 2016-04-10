@@ -171,3 +171,7 @@
 /datum/gear/head/turban/New()
 	..()
 	gear_tweaks = list(gear_tweak_free_color_choice)
+
+/datum/gear/head/helmet/cerberus
+	display_name = "cerberus mask"
+	path = /obj/item/clothing/head/helmet/cerberus

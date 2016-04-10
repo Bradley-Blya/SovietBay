@@ -279,3 +279,14 @@
 	icon_state = "turban"
 	body_parts_covered = 0
 	flags_inv = BLOCKHAIR
+
+//lifeweb
+
+/obj/item/clothing/head/helmet/cerberus
+	name = "cerberus mask"
+	desc = "Old mask made of silver alloy."
+	icon_state = "cerberus"
+	item_flags = THICKMATERIAL
+	flags_inv = HIDEMASK|HIDEEARS|HIDEEYES|HIDEFACE|BLOCKHAIR
+	body_parts_covered = HEAD|FACE|EYES
+	armor = list(melee = 10, bullet = 5, laser = 5,energy = 5, bomb = 0, bio = 0, rad = 0)
