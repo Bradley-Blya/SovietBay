@@ -35,6 +35,8 @@
 	set name = "donate"
 	set desc = "Donate."
 	set hidden = 1
+	alert("Not today","Ok")
+	return
 	if(alert("This will open the donate page in your browser. Are you sure?",,"Yes","No")=="No")
 		return
 	src << link("http://sovietstation.ru/index.php?showtopic=145")
