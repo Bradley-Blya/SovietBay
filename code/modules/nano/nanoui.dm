@@ -1,10 +1,3 @@
-// Nano Hoyee fix for some servers
-#define FILE_DIR "nano"
-#define FILE_DIR "nano/css"
-#define FILE_DIR "nano/images"
-#define FILE_DIR "nano/js"
-#define FILE_DIR "nano/templates"
-
 /**********************************************************
 NANO UI FRAMEWORK
 
