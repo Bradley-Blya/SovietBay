@@ -311,7 +311,7 @@ client/proc/MayRespawn()
 
 /client/verb/resend_resources()
 	set name = "Send Resources"
-	set category = "Preference"
+	set category = "Preferences"
 
 	nanomanager.close_uis(src)
 	nanomanager.send_resources(src)
