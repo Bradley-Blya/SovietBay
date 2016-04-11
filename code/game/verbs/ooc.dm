@@ -16,7 +16,7 @@
 	if(!msg)	return
 
 	if(!is_preference_enabled(/datum/client_preference/show_ooc))
-		src << "<span class='warning'>You have OOC muted.</span>"
+		src << "<span class='warning'>You have disabled OOC. You can turn it on in Character Setup.</span>"
 		return
 
 	if(!holder)
