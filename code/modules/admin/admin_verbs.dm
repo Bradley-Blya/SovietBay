@@ -418,10 +418,14 @@ var/list/admin_verbs_mentor = list(
 		if(mob.invisibility == INVISIBILITY_OBSERVER)
 			mob.invisibility = initial(mob.invisibility)
 			mob << "\red <b>Invisimin off. Invisibility reset.</b>"
+			log_admin("[key_name(usr)] turned off invisimin.")
+			message_admins("\blue [key_name_admin(usr)] turned off invisimin.", 1)
 			mob.alpha = max(mob.alpha + 100, 255)
 		else
 			mob.invisibility = INVISIBILITY_OBSERVER
 			mob << "\blue <b>Invisimin on. You are now as invisible as a ghost.</b>"
+			log_admin("[key_name(usr)] turned on invisimin.")
+			message_admins("\blue [key_name_admin(usr)] turned on invisimin.", 1)
 			mob.alpha = max(mob.alpha - 100, 0)
 
 
