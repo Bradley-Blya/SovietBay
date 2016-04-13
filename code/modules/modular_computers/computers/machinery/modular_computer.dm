@@ -28,7 +28,7 @@
 
 	var/obj/item/modular_computer/processor/cpu = null				// CPU that handles most logic while this type only handles power and other specific things.
 
-/obj/machinery/modular_computer/attack_ghost(var/mob/dead/observer/user)
+/obj/machinery/modular_computer/attack_ghost(var/mob/observer/ghost/user)
 	if(cpu)
 		cpu.attack_ghost(user)
 
@@ -86,8 +86,8 @@
 		if(cpu)
 			cpu.shutdown_computer(0)
 		battery_powered = 0
-		update_icon()
 	stat |= NOPOWER
+	update_icon()
 
 // Called by cpu item's process() automatically, handles our power interaction.
 /obj/machinery/modular_computer/proc/handle_power()
@@ -136,6 +136,7 @@
 		return
 	else
 		..()
+		update_icon()
 
 /obj/machinery/modular_computer/attackby(var/obj/item/weapon/W as obj, var/mob/user as mob)
 	if(cpu)

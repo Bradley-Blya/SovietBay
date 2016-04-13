@@ -329,7 +329,7 @@ var/global/list/additional_antag_types = list()
 				if(M.loc && M.loc.loc && M.loc.loc.type == /area/shuttle/escape_pod5/centcom)
 					escaped_on_pod_5++
 
-			if(isobserver(M))
+			if(isghost(M))
 				ghosts++
 
 	var/text = ""
@@ -410,14 +410,9 @@ var/global/list/additional_antag_types = list()
 			else
 				intercepttext += "<b>[M.name]</b>, the <b>[M.mind.assigned_role]</b> <br>"
 
-	for (var/obj/machinery/computer/communications/comm in machines)
-		if (!(comm.stat & (BROKEN | NOPOWER)) && comm.prints_intercept)
-			var/obj/item/weapon/paper/intercept = new /obj/item/weapon/paper( comm.loc )
-			intercept.name = "Cent. Com. Status Summary"
-			intercept.info = intercepttext
+	//New message handling
+	post_comm_message("Cent. Com. Status Summary", intercepttext)
 
-			comm.messagetitle.Add("Cent. Com. Status Summary")
-			comm.messagetext.Add(intercepttext)
 	world << sound('sound/AI/commandreport.ogg')
 
 /datum/game_mode/proc/get_players_for_role(var/role, var/antag_id)
@@ -528,7 +523,7 @@ proc/display_roundstart_logout_report()
 					continue //Dead
 
 			continue //Happy connected client
-		for(var/mob/dead/observer/D in mob_list)
+		for(var/mob/observer/ghost/D in mob_list)
 			if(D.mind && (D.mind.original == L || D.mind.current == L))
 				if(L.stat == DEAD)
 					msg += "<b>[L.name]</b> ([ckey(D.mind.key)]), the [L.job] (Dead)\n"

@@ -4,14 +4,14 @@
 	if(!client)
 		return
 
-	if(speaker && !speaker.client && istype(src,/mob/dead/observer) && client.prefs.toggles & CHAT_GHOSTEARS && !speaker in view(src))
+	if(speaker && !speaker.client && isghost(src) && is_preference_enabled(/datum/client_preference/ghost_ears) && !(speaker in view(src)))
 			//Does the speaker have a client?  It's either random stuff that observers won't care about (Experiment 97B says, 'EHEHEHEHEHEHEHE')
 			//Or someone snoring.  So we make it where they won't hear it.
 		return
 
 	//make sure the air can transmit speech - hearer's side
 	var/turf/T = get_turf(src)
-	if ((T) && (!(istype(src, /mob/dead/observer)))) //Ghosts can hear even in vacuum.
+	if ((T) && (!(isghost(src)))) //Ghosts can hear even in vacuum.
 		var/datum/gas_mixture/environment = T.return_air()
 		var/pressure = (environment)? environment.return_pressure() : 0
 		if(pressure < SOUND_MINIMUM_PRESSURE && get_dist(speaker, src) > 1)
@@ -50,13 +50,16 @@
 		message = "<i>[message]</i>"
 
 	var/track = null
-	if(istype(src, /mob/dead/observer))
-		if(italics && client.prefs.toggles & CHAT_GHOSTRADIO)
+	var/speaker_info = null
+	if(isghost(src))
+		if(italics && is_preference_enabled(/datum/client_preference/ghost_radio))
 			return
 		if(speaker_name != speaker.real_name && speaker.real_name)
 			speaker_name = "[speaker.real_name] ([speaker_name])"
+		if(ismob(speaker))
+			speaker_info = "(<a href='?src=\ref[src];speakerinfo=\ref[speaker]'>?</a>)"
 		track = "([ghost_follow_link(speaker, src)]) "
-		if(client.prefs.toggles & CHAT_GHOSTEARS && speaker in view(src))
+		if(is_preference_enabled(/datum/client_preference/ghost_ears) && (speaker in view(src)))
 			message = "<b>[message]</b>"
 
 	if(sdisabilities & DEAF || ear_deaf)
@@ -67,9 +70,9 @@
 				src << "<span class='name'>[speaker_name]</span>[alt_name] talks but you cannot hear \him."
 	else
 		if(language)
-			on_hear_say("<span class='game say'><span class='name'>[speaker_name]</span>[alt_name] [track][language.format_message(message, verb)]</span>")
+			on_hear_say("<span class='game say'><span class='name'>[speaker_name]</span>[alt_name] [speaker_info][track][language.format_message(message, verb)]</span>")
 		else
-			on_hear_say("<span class='game say'><span class='name'>[speaker_name]</span>[alt_name] [track][verb], <span class='message'><span class='body'>\"[message]\"</span></span></span>")
+			on_hear_say("<span class='game say'><span class='name'>[speaker_name]</span>[alt_name] [speaker_info][track][verb], <span class='message'><span class='body'>\"[message]\"</span></span></span>")
 		if (speech_sound && (get_dist(speaker, src) <= world.view && src.z == speaker.z))
 			var/turf/source = speaker? get_turf(speaker) : get_turf(src)
 			src.playsound_local(source, speech_sound, sound_vol, 1)
@@ -85,6 +88,8 @@
 
 	if(!client)
 		return
+
+	message = sanitize_local(message)
 
 	if(sleeping || stat==1) //If unconscious or sleeping
 		hear_sleep(message)
@@ -171,13 +176,13 @@
 
 		if(changed_voice)
 			if(impersonating)
-				track = "<a href='byond://?src=\ref[src];trackname=[html_encode(speaker_name)];track=\ref[impersonating]'>[speaker_name] ([jobname])</a>"
+				track = "<a href='byond://?src=\ref[src];trackname=[lhtml_encode(speaker_name)];track=\ref[impersonating]'>[speaker_name] ([jobname])</a>"
 			else
 				track = "[speaker_name] ([jobname])"
 		else
-			track = "<a href='byond://?src=\ref[src];trackname=[html_encode(speaker_name)];track=\ref[speaker]'>[speaker_name] ([jobname])</a>"
+			track = "<a href='byond://?src=\ref[src];trackname=[lhtml_encode(speaker_name)];track=\ref[speaker]'>[speaker_name] ([jobname])</a>"
 
-	if(istype(src, /mob/dead/observer))
+	if(isghost(src))
 		if(speaker_name != speaker.real_name && !isAI(speaker)) //Announce computer and various stuff that broadcasts doesn't use it's real name but AI's can't pretend to be other mobs.
 			speaker_name = "[speaker.real_name] ([speaker_name])"
 		track = "[speaker_name] ([ghost_follow_link(speaker, src)])"
@@ -199,7 +204,7 @@
 /mob/proc/on_hear_radio(part_a, speaker_name, track, part_b, formatted)
 	src << "[part_a][speaker_name][part_b][formatted]"
 
-/mob/dead/observer/on_hear_radio(part_a, speaker_name, track, part_b, formatted)
+/mob/observer/ghost/on_hear_radio(part_a, speaker_name, track, part_b, formatted)
 	src << "[part_a][track][part_b][formatted]"
 
 /mob/living/silicon/on_hear_radio(part_a, speaker_name, track, part_b, formatted)
@@ -230,7 +235,7 @@
 	var/heard = ""
 	if(prob(15))
 		var/list/punctuation = list(",", "!", ".", ";", "?")
-		var/list/messages = text2list(message, " ")
+		var/list/messages = splittext(message, " ")
 		var/R = rand(1, messages.len)
 		var/heardword = messages[R]
 		if(copytext(heardword,1, 1) in punctuation)

@@ -317,10 +317,10 @@
 	icon_state ="booksmoke"
 	desc = "This book is overflowing with the dank arts."
 
-/obj/item/weapon/spellbook/oneuse/smoke/recoil(mob/user as mob)
+/obj/item/weapon/spellbook/oneuse/smoke/recoil(mob/living/carbon/user as mob)
 	..()
 	user <<"<span class='caution'>Your stomach rumbles...</span>"
-	if(user.nutrition)
+	if(istype(user) && user.nutrition)
 		user.nutrition -= 200
 		if(user.nutrition <= 0)
 			user.nutrition = 0
@@ -331,7 +331,7 @@
 	icon_state ="bookblind"
 	desc = "This book looks blurry, no matter how you look at it."
 
-/obj/item/weapon/spellbook/oneuse/blind/recoil(mob/user as mob)
+/obj/item/weapon/spellbook/oneuse/blind/recoil(mob/living/user as mob)
 	..()
 	user <<"<span class='warning'>You go blind!</span>"
 	user.eye_blind = 10
@@ -369,7 +369,7 @@
 		for(var/V in stored_swap.mind.special_verbs)
 			stored_swap.verbs -= V
 
-	var/mob/dead/observer/ghost = stored_swap.ghostize(0)
+	var/mob/observer/ghost/ghost = stored_swap.ghostize(0)
 	ghost.spell_list = stored_swap.spell_list
 
 	user.mind.transfer_to(stored_swap)
