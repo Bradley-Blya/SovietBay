@@ -412,3 +412,6 @@ GENERATE_ASTEROID
 
 ## Uncomment this line to announce shuttle dock announcements to the main IRC channel, if MAIN_IRC has also been setup.
 # ANNOUNCE_SHUTTLE_DOCK_TO_IRC
+
+## NanoUI force for servers that use tg-like hub.
+# NANOUI_LEGACY
