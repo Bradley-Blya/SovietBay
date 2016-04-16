@@ -64,28 +64,20 @@
 		var/obj/machinery/nuclearbomb/nuke = new(get_turf(nuke_spawn))
 		code = "[rand(10000, 99999)]"
 		nuke.r_code = code
-
-	if(code)
-		if(!paper_spawn_loc)
-			if(leader && leader.current)
-				paper_spawn_loc = get_turf(leader.current)
-			else
-				paper_spawn_loc = get_turf(locate("landmark*Nuclear-Code"))
-
+		paper_spawn_loc = get_turf(locate("landmark*Nuclear-Code"))
 		if(paper_spawn_loc)
 			// Create and pass on the bomb code paper.
 			var/obj/item/weapon/paper/P = new(paper_spawn_loc)
 			P.info = "The nuclear authorization code is: <b>[code]</b>"
 			P.name = "nuclear bomb code"
-			if(leader && leader.current)
+/*			if(leader && leader.current)
 				if(get_turf(P) == get_turf(leader.current) && !(leader.current.l_hand && leader.current.r_hand))
-					leader.current.put_in_hands(P)
-
-		if(!code_owner && leader)
-			code_owner = leader
-		if(code_owner)
-			code_owner.store_memory("<B>Nuclear Bomb Code</B>: [code]", 0, 0)
-			code_owner.current << "The nuclear authorization code is: <B>[code]</B>"
+					leader.current.put_in_hands(P)*/
+		for(var/mob/new_player/player in player_list)
+			if(player && player.ready && player.mind)
+				if(player.mind.assigned_role=="Mercenary")
+					code_owner.store_memory("<B>Nuclear Bomb Code</B>: [code]", 0, 0)
+					code_owner.current << "The nuclear authorization code is: <B>[code]</B>"
 	else
 		message_admins("<span class='danger'>Could not spawn nuclear bomb. Contact a developer.</span>")
 		return
