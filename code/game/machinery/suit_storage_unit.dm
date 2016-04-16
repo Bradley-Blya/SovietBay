@@ -566,6 +566,11 @@
 /obj/machinery/suit_storage_unit/attack_ai(mob/user as mob)
 	return src.attack_hand(user)
 
+/obj/machinery/suit_storage_unit/captain_unit
+	SUIT_TYPE = /obj/item/clothing/suit/armor/captain
+	HELMET_TYPE = /obj/item/clothing/head/helmet/space/capspace
+	MASK_TYPE = /obj/item/clothing/mask/gas
+
 //////////////////////////////REMINDER: Make it lock once you place some fucker inside.
 
 //God this entire file is fucking awful
