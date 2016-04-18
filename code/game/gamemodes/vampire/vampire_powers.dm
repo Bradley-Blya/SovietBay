@@ -1,5 +1,3 @@
-
-
 /datum/vampire
 	var/list/datum/mind/vampires = list()
 	var/list/datum/mind/enthralled = list() //those controlled by a vampire
@@ -40,13 +38,13 @@
 	for(var/n in mind.vampire.powers)
 		switch(n)
 			if(VAMP_SHAPE)
-				verbs += /client/vampire/proc/vampire_shapeshift
+				//verbs += /client/vampire/proc/vampire_shapeshift
 			if(VAMP_VISION)
 				continue
 			if(VAMP_DISEASE)
 				verbs += /client/vampire/proc/vampire_disease
 			if(VAMP_CLOAK)
-				verbs += /client/vampire/proc/vampire_cloak
+				//verbs += /client/vampire/proc/vampire_cloak
 			if(VAMP_BATS)
 				verbs += /client/vampire/proc/vampire_bats
 			if(VAMP_SCREAM)
@@ -54,7 +52,7 @@
 			if(VAMP_JAUNT)
 				verbs += /client/vampire/proc/vampire_jaunt
 			if(VAMP_BLINK)
-				verbs += /client/vampire/proc/vampire_shadowstep
+				//verbs += /client/vampire/proc/vampire_shadowstep
 			if(VAMP_SLAVE)
 				verbs += /client/vampire/proc/vampire_enthrall
 			if(VAMP_FULL)
@@ -162,7 +160,7 @@
 			switch(n)
 				if(VAMP_SHAPE)
 					src << "\blue You have gained the shapeshifting ability, at the cost of stored blood you can change your form permanently."
-					verbs += /client/vampire/proc/vampire_shapeshift
+					//verbs += /client/vampire/proc/vampire_shapeshift
 				if(VAMP_VISION)
 					src << "\blue Your vampiric vision has improved."
 					//no verb
@@ -171,7 +169,7 @@
 					verbs += /client/vampire/proc/vampire_disease
 				if(VAMP_CLOAK)
 					src << "\blue You have gained the Cloak of Darkness ability which when toggled makes you near invisible in the shroud of darkness."
-					verbs += /client/vampire/proc/vampire_cloak
+					//verbs += /client/vampire/proc/vampire_cloak
 				if(VAMP_BATS)
 					src << "\blue You have gained the Summon Bats ability."
 					verbs += /client/vampire/proc/vampire_bats // work in progress
@@ -186,7 +184,7 @@
 					verbs += /client/vampire/proc/vampire_enthrall
 				if(VAMP_BLINK)
 					src << "\blue You have gained the ability to shadowstep, which makes you disappear into nearby shadows at the cost of blood."
-					verbs += /client/vampire/proc/vampire_shadowstep
+					//verbs += /client/vampire/proc/vampire_shadowstep
 				if(VAMP_FULL)
 					src << "\blue You have reached your full potential and are no longer weak to the effects of anything holy and your vision has been improved greatly."
 					//no verb
@@ -276,15 +274,23 @@
 		M.current.stunned = 0
 		M.current.paralysis = 0
 		//M.vampire.bloodusable -= 10
-		M.current << "\blue You flush your system with clean blood and remove any incapacitating effects."
+		M.current << "\blue You remove any incapacitating effects."
 		spawn(1)
-			if(M.vampire.bloodtotal >= 200)
-				for(var/i = 0; i < 5; i++)
-					M.current.adjustBruteLoss(-2)
-					M.current.adjustOxyLoss(-5)
-					M.current.adjustToxLoss(-2)
-					M.current.adjustFireLoss(-2)
-					sleep(35)
+		if(M.vampire.bloodtotal >= 100)
+			M.current << "\blue You flush your system with clean blood and remove any incapacitating effects."
+			for(var/i = 0; i < 5; i++)
+				M.current.adjustBruteLoss(-2)
+				M.current.adjustOxyLoss(-5)
+				M.current.adjustToxLoss(-2)
+				M.current.adjustFireLoss(-2)
+				sleep(10)
+		if(M.vampire.bloodtotal >= 200)
+			for(var/i = 0; i < 5; i++)
+				M.current.adjustBruteLoss(-20)
+				M.current.adjustOxyLoss(-50)
+				M.current.adjustToxLoss(-20)
+				M.current.adjustFireLoss(-20)
+				sleep(10)
 		M.current.verbs -= /client/vampire/proc/vampire_rejuvinate
 		spawn(200)
 			M.current.verbs += /client/vampire/proc/vampire_rejuvinate
@@ -417,11 +423,11 @@
 			C.stuttering = 20
 			C << "\red You are blinded by [M.current]'s glare"
 
-/client/vampire/proc/vampire_shapeshift() //Hi.  I'm stupid and there are missing procs all around.  Namely the randomname proc.  I can't find it and can't code a new one because I am bad.  Sorry!
+/*/client/vampire/proc/vampire_shapeshift() //Hi.  I'm stupid and there are missing procs all around.  Namely the randomname proc.  I can't find it and can't code a new one because I am bad.  Sorry!
 	set category = "Abilities"
 	set name = "Shapeshift (50)"
 	set desc = "This does nothing.  It's broken.  Sorry!"//orig text: Changes your name and appearance at the cost of 50 blood and has a cooldown of 3 minutes.
-/*	var/datum/mind/M = usr.mind
+	var/datum/mind/M = usr.mind
 	if(!M) return
 	if(M.current.vampire_power(50, 0))
 		M.current.visible_message("<span class='warning'>[M.current.name] transforms!</span>")
@@ -490,12 +496,13 @@
 	else
 		M.current << "\red You or your target either moved or you dont have enough usable blood."
 		return
-
+/*
 /client/vampire/proc/vampire_cloak()
 	set category = "Abilities"
 	set name = "Cloak of Darkness (toggle)"
 	set desc = "Toggles whether you are currently cloaking yourself in darkness."
 	var/datum/mind/M = usr.mind
+	set invisibility = 20
 	if(!M) return
 	if(M.current.vampire_power(0, 0))
 		M.vampire.iscloaking = !M.vampire.iscloaking
@@ -518,7 +525,7 @@
 //		return 1
 	else
 		alpha = round((255 * 0.80))
-
+*/
 /mob/proc/can_enthrall(mob/living/carbon/C)
 	var/enthrall_safe = 0
 	var/datum/vampire/vampire = src.mind.vampire
@@ -657,6 +664,7 @@
 
 // Blink for vamps
 // Less smoke spam.
+/*
 /client/vampire/proc/vampire_shadowstep()
 	set category = "Abilities"
 	set name = "Shadowstep (30)"
@@ -714,7 +722,7 @@
 		M.current.verbs -= /client/vampire/proc/vampire_shadowstep
 		spawn(20)
 			M.current.verbs += /client/vampire/proc/vampire_shadowstep
-
+*/
 /mob/proc/remove_vampire_blood(amount = 0)
 	var/bloodold
 	if(!mind || !mind.vampire)
@@ -832,7 +840,7 @@
 		hud_used.vampire_blood_display.maptext_height = 26
 		hud_used.vampire_blood_display.maptext = "<div align='left' valign='top' style='position:relative; top:0px; left:6px'> U:<font color='#33FF33' size='1'>[mind.vampire.bloodusable]</font><br> T:<font color='#FFFF00' size='1'>[mind.vampire.bloodtotal]</font></div>"
 		*/
-	handle_vampire_cloak()
+	//handle_vampire_cloak()
 	if(istype(loc, /turf/space))
 		check_sun()
 	mind.vampire.nullified = max(0, mind.vampire.nullified - 1)

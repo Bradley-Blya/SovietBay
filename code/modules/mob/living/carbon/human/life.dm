@@ -1259,7 +1259,7 @@
 		if((VAMP_FULL in mind.vampire.powers))
 			sight |= SEE_TURFS|SEE_MOBS|SEE_OBJS
 			see_in_dark = 8
-			//see_invisible = SEE_INVISIBLE_OBSERVER_NOLIGHTING
+			see_invisible = 15
 
 	if(mind && mind.vampire)
 		if((VAMP_VISION in mind.vampire.powers) && !(VAMP_FULL in mind.vampire.powers))
@@ -1267,7 +1267,7 @@
 		if((VAMP_FULL in mind.vampire.powers))
 			sight |= SEE_TURFS|SEE_MOBS|SEE_OBJS
 			see_in_dark = 8
-			//see_invisible = SEE_INVISIBLE_OBSERVER_NOLIGHTING
+			see_invisible = 15
 
 	if(XRAY in mutations)
 		sight |= SEE_TURFS|SEE_MOBS|SEE_OBJS

@@ -149,6 +149,7 @@ datum/hud/New(mob/owner)
 	disarm_intent = null
 	help_intent = null
 	lingchemdisplay = null
+	vampire_blood_display = null
 	blobpwrdisplay = null
 	blobhealthdisplay = null
 	r_hand_hud_object = null
@@ -253,8 +254,9 @@ datum/hud/New(mob/owner)
 	var/ui_style = ui_style2icon(mymob.client.prefs.UI_style)
 	var/ui_color = mymob.client.prefs.UI_style_color
 	var/ui_alpha = mymob.client.prefs.UI_style_alpha
-	if(mymob.mind && mymob.mind.vampire)
-		vampire_hud()
+	vampire_hud()
+	//if(mymob.mind && mymob.mind.vampire)
+		//vampire_hud()
 
 	mymob.instantiate_hud(src, ui_style, ui_color, ui_alpha)
 
