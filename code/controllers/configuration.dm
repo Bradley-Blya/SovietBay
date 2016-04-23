@@ -2,6 +2,8 @@ var/list/gamemode_cache = list()
 
 /datum/configuration
 	var/server_name = null				// server name (for world name / status)
+	var/server_group = null				// server group (for world name / status)
+	var/server_group_url = null			// server group site (for status)
 	var/server_suffix = 0				// generate numeric suffix based on server port
 
 	var/nudge_script_path = "nudge.py"  // where the nudge.py script is located
@@ -403,6 +405,12 @@ var/list/gamemode_cache = list()
 
 				if ("servername")
 					config.server_name = value
+
+				if ("servergroup")
+					config.server_group = value
+
+				if ("servergroupurl")
+					config.server_group_url = value
 
 				if ("serversuffix")
 					config.server_suffix = 1

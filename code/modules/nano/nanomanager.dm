@@ -415,7 +415,6 @@
 'nano/templates/supermatter_crystal.tmpl',
 'nano/templates/tanks.tmpl',
 'nano/templates/telescience_console.tmpl',
-'nano/templates/TemplatesGuide.txt',
 'nano/templates/transfer_valve.tmpl',
 'nano/templates/turret_control.tmpl',
 'nano/templates/uplink.tmpl',
