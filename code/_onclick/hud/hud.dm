@@ -254,9 +254,6 @@ datum/hud/New(mob/owner)
 	var/ui_style = ui_style2icon(mymob.client.prefs.UI_style)
 	var/ui_color = mymob.client.prefs.UI_style_color
 	var/ui_alpha = mymob.client.prefs.UI_style_alpha
-	vampire_hud()
-	//if(mymob.mind && mymob.mind.vampire)
-		//vampire_hud()
 
 	mymob.instantiate_hud(src, ui_style, ui_color, ui_alpha)
 
