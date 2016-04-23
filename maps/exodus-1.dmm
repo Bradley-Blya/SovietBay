@@ -1851,7 +1851,7 @@
 "aJE" = (/obj/machinery/portable_atmospherics/canister/oxygen,/obj/effect/floor_decal/industrial/warning{dir = 4},/turf/simulated/floor/tiled,/area/ai_monitored/storage/eva)
 "aJF" = (/obj/machinery/door/firedoor/border_only,/obj/structure/grille,/obj/structure/window/reinforced{dir = 8},/obj/structure/window/reinforced,/obj/structure/window/reinforced{dir = 4},/obj/structure/cable/green,/turf/simulated/floor/plating,/area/ai_monitored/storage/eva)
 "aJG" = (/obj/machinery/light,/turf/simulated/floor/tiled/dark,/area/ai_monitored/storage/eva)
-"aJH" = (/obj/structure/table/rack{dir = 8; layer = 2.9},/obj/item/weapon/rig/unathi,/obj/item/clothing/mask/breath,/turf/simulated/floor/tiled/dark,/area/ai_monitored/storage/eva)
+"aJH" = (/obj/structure/table/rack{dir = 8; layer = 2.9},/obj/item/weapon/rig/unathi,/obj/item/clothing/mask/breath,/obj/item/weapon/rig/resomi,/turf/simulated/floor/tiled/dark,/area/ai_monitored/storage/eva)
 "aJI" = (/obj/machinery/alarm{dir = 4; icon_state = "alarm0"; pixel_x = -22},/obj/effect/floor_decal/corner/blue{dir = 9},/turf/simulated/floor/tiled,/area/hallway/primary/central_one)
 "aJJ" = (/obj/structure/cable{d1 = 1; d2 = 2; icon_state = "1-2"},/turf/simulated/floor/tiled,/area/hallway/primary/central_one)
 "aJK" = (/obj/effect/floor_decal/corner/blue{dir = 4},/turf/simulated/floor/tiled,/area/hallway/primary/central_one)
