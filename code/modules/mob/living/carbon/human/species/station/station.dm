@@ -241,6 +241,7 @@
 	flesh_color = "#907E4A"
 
 	reagent_tag = IS_DIONA
+	genders = list(PLURAL)
 
 /datum/species/diona/can_understand(var/mob/other)
 	var/mob/living/carbon/alien/diona/D = other
@@ -345,6 +346,7 @@
 	heat_discomfort_strings = list(
 		"Your CPU temperature probes warn you that you are approaching critical heat levels!"
 		)
+	genders = list(MALE,FEMALE,NEUTER)
 
 /datum/species/machine/handle_death(var/mob/living/carbon/human/H)
 	..()
@@ -354,4 +356,3 @@
 
 /datum/species/machine/sanitize_name(var/new_name)
 	return sanitizeName(new_name, allow_numbers = 1)
-
