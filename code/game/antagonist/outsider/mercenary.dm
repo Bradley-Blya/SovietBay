@@ -18,6 +18,8 @@ var/datum/antagonist/mercenary/mercs
 	initial_spawn_req = 4
 	initial_spawn_target = 6
 
+	faction = "mercenary"
+
 /datum/antagonist/mercenary/New()
 	..()
 	mercs = src
@@ -42,7 +44,7 @@ var/datum/antagonist/mercenary/mercs
 	player.equip_to_slot_or_del(new /obj/item/weapon/storage/box/engineer(player.back), slot_in_backpack)
 	player.equip_to_slot_or_del(new /obj/item/weapon/reagent_containers/pill/cyanide(player), slot_in_backpack)
 
-	var/obj/item/device/radio/uplink/U = new(player.loc, player.mind, DEFAULT_TELECRYSTAL_AMOUNT)
+	var/obj/item/device/radio/uplink/U = new(get_turf(player), player.mind, DEFAULT_TELECRYSTAL_AMOUNT)
 	player.put_in_hands(U)
 
 	player.update_icons()

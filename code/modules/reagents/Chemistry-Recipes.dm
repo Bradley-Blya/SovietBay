@@ -1055,8 +1055,7 @@
 	P.loc = get_turf(holder.my_atom)
 	..()
 
-
-//Gold - no longer removed.
+//Gold
 /datum/chemical_reaction/slime/crit
 	name = "Slime Crit"
 	id = "m_tele"
@@ -1064,7 +1063,20 @@
 	required_reagents = list("phoron" = 1)
 	result_amount = 1
 	required = /obj/item/slime_extract/gold
-
+	var/list/possible_mobs = list(
+							/mob/living/simple_animal/cat,
+							/mob/living/simple_animal/cat/kitten,
+							/mob/living/simple_animal/corgi,
+							/mob/living/simple_animal/corgi/puppy,
+							/mob/living/simple_animal/cow,
+							/mob/living/simple_animal/chick,
+							/mob/living/simple_animal/chicken
+							)
+/datum/chemical_reaction/slime/crit/on_reaction(var/datum/reagents/holder)
+	var/type = pick(possible_mobs)
+	new type(get_turf(holder.my_atom))
+	..()
+/*	soft bay12 guys
 /datum/chemical_reaction/slime/crit/on_reaction(var/datum/reagents/holder)
 	var/list/crit = typesof(/mob/living/simple_animal/hostile) - /mob/living/simple_animal/hostile
 	playsound(get_turf(holder.my_atom), 'sound/effects/phasein.ogg', 100, 1)
@@ -1080,7 +1092,7 @@
 			if(prob(50))
 				for(var/j = 1, j <= rand(1, 3), j++)
 					step(B, pick(NORTH, SOUTH, EAST, WEST))
-	..()
+*/
 
 //Silver
 /datum/chemical_reaction/slime/bork
@@ -1328,6 +1340,76 @@
 	Z.loc = get_turf(holder.my_atom)
 	Z.announce_to_ghosts()
 
+//Sepia
+/datum/chemical_reaction/slime/film
+	name = "Slime Film"
+	id = "m_film"
+	result = null
+	required_reagents = list("blood" = 1)
+	result_amount = 2
+	required = /obj/item/slime_extract/sepia
+
+/datum/chemical_reaction/slime/film/on_reaction(var/datum/reagents/holder)
+	for(var/i in 1 to result_amount)
+		new /obj/item/device/camera_film(get_turf(holder.my_atom))
+	..()
+
+/datum/chemical_reaction/slime/camera
+	name = "Slime Camera"
+	id = "m_camera"
+	result = null
+	required_reagents = list("phoron" = 1)
+	result_amount = 1
+	required = /obj/item/slime_extract/sepia
+
+/datum/chemical_reaction/slime/camera/on_reaction(var/datum/reagents/holder)
+	new /obj/item/device/camera(get_turf(holder.my_atom))
+	..()
+
+//Bluespace
+/datum/chemical_reaction/slime/teleport
+	name = "Slime Teleport"
+	id = "m_blink"
+	result = null
+	required_reagents = list("phoron" = 1)
+	required = /obj/item/slime_extract/bluespace
+	reaction_sound = 'sound/effects/teleport.ogg'
+
+/datum/chemical_reaction/slime/teleport/on_reaction(var/datum/reagents/holder)
+	var/list/turfs = list()
+	for(var/turf/T in orange(holder.my_atom,6))
+		turfs += T
+	for(var/atom/movable/a in viewers(holder.my_atom,2))
+		if(!a.simulated)
+			continue
+		a.forceMove(pick(turfs))
+	..()
+
+//pyrite
+/datum/chemical_reaction/slime/paint
+	name = "Slime Paint"
+	id = "m_paint"
+	result = null
+	required_reagents = list("phoron" = 1)
+	required = /obj/item/slime_extract/pyrite
+
+/datum/chemical_reaction/slime/paint/on_reaction(var/datum/reagents/holder)
+	new /obj/item/weapon/reagent_containers/glass/paint/random(get_turf(holder.my_atom))
+	..()
+
+//cerulean
+/datum/chemical_reaction/slime/extract_enhance
+	name = "Extract Enhancer"
+	id = "m_enhance"
+	result = null
+	required_reagents = list("phoron" = 1)
+	required = /obj/item/slime_extract/cerulean
+
+/datum/chemical_reaction/slime/extract_enhance/on_reaction(var/datum/reagents/holder)
+	new /obj/item/weapon/slimesteroid2(get_turf(holder.my_atom))
+	..()
+
+
 /* Food */
 
 /datum/chemical_reaction/tofu
@@ -1422,7 +1504,7 @@
 	name = "Dough"
 	id = "dough"
 	result = null
-	required_reagents = list("egg" = 3, "flour" = 10)
+	required_reagents = list("egg" = 3, "flour" = 10, "water" = 5)
 	result_amount = 1
 
 /datum/chemical_reaction/dough/on_reaction(var/datum/reagents/holder, var/created_volume)
