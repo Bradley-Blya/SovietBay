@@ -38,8 +38,10 @@ var/datum/announcement/minor/captain_announcement = new(do_newscast = 1)
 		H.equip_to_slot_or_del(new /obj/item/clothing/glasses/sunglasses(H), slot_glasses)
 		if(H.backbag == 1)
 			H.equip_to_slot_or_del(new /obj/item/weapon/storage/box/ids(H), slot_l_hand)
+			H.equip_to_slot_or_del(new /obj/item/weapon/melee/telebaton(H), slot_r_hand)
 		else
 			H.equip_to_slot_or_del(new /obj/item/weapon/storage/box/ids(H.back), slot_in_backpack)
+			H.equip_to_slot_or_del(new /obj/item/weapon/melee/telebaton(H.back), slot_in_backpack)
 
 		return 1
 
@@ -91,6 +93,8 @@ var/datum/announcement/minor/captain_announcement = new(do_newscast = 1)
 		H.equip_to_slot_or_del(new /obj/item/device/pda/heads/hop(H), slot_belt)
 		if(H.backbag == 1)
 			H.equip_to_slot_or_del(new /obj/item/weapon/storage/box/ids(H), slot_l_hand)
+			H.equip_to_slot_or_del(new /obj/item/weapon/melee/telebaton(H), slot_r_hand)
 		else
 			H.equip_to_slot_or_del(new /obj/item/weapon/storage/box/ids(H.back), slot_in_backpack)
+			H.equip_to_slot_or_del(new /obj/item/weapon/melee/telebaton(H.back), slot_in_backpack)
 		return 1
