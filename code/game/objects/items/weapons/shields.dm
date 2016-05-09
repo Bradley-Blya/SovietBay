@@ -176,7 +176,7 @@
 	throwforce = 5.0
 	throw_speed = 1
 	throw_range = 4
-	w_class = 2
+	w_class = 1
 	origin_tech = list(TECH_MATERIAL = 4, TECH_MAGNET = 3, TECH_ILLEGAL = 4)
 	attack_verb = list("shoved", "bashed")
 	var/active = 0
@@ -233,3 +233,81 @@
 	else
 		set_light(0)
 
+/*
+ * Tele Shield
+ */
+
+/obj/item/weapon/shield/tele
+	name = "telescopic shield"
+	desc = "An advanced riot shield made of lightweight materials that collapses for easy storage."
+	icon = 'icons/obj/weapons.dmi'
+	icon_state = "teleriot0"
+	flags = CONDUCT
+	force = 3.0
+	throwforce = 3.0
+	throw_speed = 3
+	throw_range = 4
+	w_class = 2
+	origin_tech = list(TECH_MATERIAL = 4)
+	attack_verb = list("shoved", "bashed")
+	var/active = 0
+	var/cooldown = 0
+
+	attackby(obj/item/weapon/W as obj, mob/user as mob)
+		if(istype(W, /obj/item/weapon/melee/baton))
+			if(cooldown < world.time - 25)
+				user.visible_message("<span class='warning'>[user] bashes [src] with [W]!</span>")
+				playsound(user.loc, 'sound/effects/shieldbash.ogg', 50, 1)
+				cooldown = world.time
+		else
+			..()
+
+/obj/item/weapon/shield/tele/handle_shield(mob/user)
+	if(!active)
+		return 0
+	. = ..()
+
+	if(.) playsound(user.loc, 'sound/weapons/Genhit.ogg', 50, 1)
+
+/obj/item/weapon/shield/tele/get_block_chance(mob/user, var/damage, atom/damage_source = null, mob/attacker = null)
+	if(istype(damage_source, /obj/item/projectile))
+		var/obj/item/projectile/P = damage_source
+		if((is_sharp(P) && damage > 10) || istype(P, /obj/item/projectile/beam))
+			return (base_block_chance - round(damage / 3)) //block bullets and beams using the old block chance
+	return base_block_chance
+
+/obj/item/weapon/shield/tele/attack_self(mob/living/user as mob)
+	if ((CLUMSY in user.mutations) && prob(50))
+		user << "<span class='warning'>You beat yourself in the head with [src].</span>"
+		user.take_organ_damage(5)
+	active = !active
+	if (active)
+		force = 8
+		throwforce = 5
+		throw_speed = 2
+		update_icon()
+		w_class = 4
+		slot_flags = SLOT_BACK
+		playsound(user, 'sound/weapons/batonextend.ogg', 50, 1)
+		user << "<span class='notice'>You extend \the [src].</span>"
+
+	else
+		force = 3
+		throwforce = 3
+		throw_speed = 3
+		update_icon()
+		w_class = 2
+		slot_flags = null
+		playsound(user, 'sound/weapons/batonextend.ogg', 50, 1)
+		user << "<span class='notice'>\The [src] can now be concealed.</span>"
+
+	if(istype(user,/mob/living/carbon/human))
+		var/mob/living/carbon/human/H = user
+		H.update_inv_l_hand()
+		H.update_inv_r_hand()
+
+	add_fingerprint(user)
+	return
+
+/obj/item/weapon/shield/tele/update_icon()
+	icon_state = "teleriot[active]"
