@@ -1276,7 +1276,6 @@
 #include "code\modules\mob\living\bot\farmbot.dm"
 #include "code\modules\mob\living\bot\floorbot.dm"
 #include "code\modules\mob\living\bot\medbot.dm"
-#include "code\modules\mob\living\bot\mrgutsy.dm"
 #include "code\modules\mob\living\bot\secbot.dm"
 #include "code\modules\mob\living\carbon\breathe.dm"
 #include "code\modules\mob\living\carbon\carbon.dm"
@@ -2004,4 +2003,10 @@
 #include "maps\exodus\exodus_define.dm"
 #include "maps\torch\torch_define.dm"
 #include "maps\~mapsystem\maps.dm"
+#include "parabellum_corp\gutsy\gutsy.dm"
+#include "parabellum_corp\gutsy\gutsy_chip.dm"
+#include "parabellum_corp\gutsy\gutsy_construction.dm"
+#include "parabellum_corp\gutsy\gutsy_fuel.dm"
+#include "parabellum_corp\gutsy\gutsy_life.dm"
+#include "parabellum_corp\gutsy\gutsy_update_icons.dm"
 // END_INCLUDE
