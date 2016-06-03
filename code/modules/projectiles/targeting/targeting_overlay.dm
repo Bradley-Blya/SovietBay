@@ -23,6 +23,7 @@
 	owner = newowner
 	loc = null
 	verbs.Cut()
+	toggle_permission(TARGET_CAN_RADIO)
 
 /obj/aiming_overlay/proc/toggle_permission(var/perm)
 
@@ -111,6 +112,8 @@ obj/aiming_overlay/proc/update_aiming_deferred()
 
 	if(!(aiming_with in owner) || (istype(owner, /mob/living/carbon/human) && (owner.l_hand != aiming_with && owner.r_hand != aiming_with)))
 		owner << "<span class='warning'>You must keep hold of your weapon!</span>"
+	else if(owner.eye_blind)
+		owner << "<span class='warning'>You are blind and cannot see your target!</span>"
 	else if(!aiming_at || !istype(aiming_at.loc, /turf))
 		owner << "<span class='warning'>You have lost sight of your target!</span>"
 	else if(owner.incapacitated() || owner.lying || owner.restrained())
@@ -199,6 +202,7 @@ obj/aiming_overlay/proc/update_aiming_deferred()
 		else
 			owner << "<span class='notice'>You will no longer aim rather than fire.</span>"
 			owner.client.remove_gun_icons()
+		owner.gun_setting_icon.icon_state = "gun[active]"
 
 /obj/aiming_overlay/proc/cancel_aiming(var/no_message = 0)
 	if(!aiming_with || !aiming_at)

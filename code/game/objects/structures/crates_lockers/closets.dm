@@ -28,20 +28,13 @@
 		for(I in src.loc)
 			if(I.density || I.anchored || I == src) continue
 			I.forceMove(src)
-		// adjust locker size to hold all items with 5 units of free store room
-		var/content_size = 0
-		for(I in src.contents)
-			content_size += Ceiling(I.w_class/2)
-		if(content_size > storage_capacity-5)
-			storage_capacity = content_size + 5
-
 
 /obj/structure/closet/examine(mob/user)
 	if(..(user, 1) && !opened)
 		var/content_size = 0
 		for(var/obj/item/I in src.contents)
 			if(!I.anchored)
-				content_size += Ceiling(I.w_class/2)
+				content_size += content_size(I)
 		if(!content_size)
 			user << "It is empty."
 		else if(storage_capacity > content_size*4)
@@ -132,7 +125,7 @@
 /obj/structure/closet/proc/store_items(var/stored_units)
 	var/added_units = 0
 	for(var/obj/item/I in src.loc)
-		var/item_size = Ceiling(I.w_class / 2)
+		var/item_size = content_size(I)
 		if(stored_units + added_units + item_size > storage_capacity)
 			continue
 		if(!I.anchored)
@@ -145,14 +138,24 @@
 	for(var/mob/living/M in src.loc)
 		if(M.buckled || M.pinned.len)
 			continue
-		if(stored_units + added_units + M.mob_size > storage_capacity)
+		var/mob_size = content_size(M)
+		if(stored_units + added_units + mob_size > storage_capacity)
 			break
 		if(M.client)
 			M.client.perspective = EYE_PERSPECTIVE
 			M.client.eye = src
 		M.forceMove(src)
-		added_units += M.mob_size
+		added_units += mob_size
 	return added_units
+
+/obj/structure/closet/proc/content_size(atom/movable/AM)
+	if(ismob(AM))
+		var/mob/M = AM
+		return M.mob_size
+	if(istype(AM, /obj/item))
+		var/obj/item/I = AM
+		return Ceiling(I.w_class / 2)
+	return 0
 
 /obj/structure/closet/proc/toggle(mob/user as mob)
 	if(!(src.opened ? src.close() : src.open()))
@@ -320,15 +323,13 @@
 /obj/structure/closet/attack_generic(var/mob/user, var/damage, var/attack_message = "destroys", var/wallbreaker)
 	if(!damage || !wallbreaker)
 		return
-	user.do_attack_animation(src)
+	attack_animation(user)
 	visible_message("<span class='danger'>[user] [attack_message] the [src]!</span>")
 	dump_contents()
 	spawn(1) qdel(src)
 	return 1
 
 /obj/structure/closet/proc/req_breakout()
-	if(breakout)
-		return 0 //Already breaking out.
 	if(opened)
 		return 0 //Door's open... wait, why are you in it's contents then?
 	if(!welded)
@@ -338,7 +339,7 @@
 /obj/structure/closet/proc/mob_breakout(var/mob/living/escapee)
 	var/breakout_time = 2 //2 minutes by default
 
-	if(!req_breakout())
+	if(breakout || !req_breakout())
 		return
 
 	escapee.setClickCooldown(100)
@@ -346,17 +347,14 @@
 	//okay, so the closet is either welded or locked... resist!!!
 	escapee << "<span class='warning'>You lean on the back of \the [src] and start pushing the door open. (this will take about [breakout_time] minutes)</span>"
 
-	visible_message("<span class='danger'>The [src] begins to shake violently!</span>")
+	visible_message("<span class='danger'>\The [src] begins to shake violently!</span>")
 
 	breakout = 1 //can't think of a better way to do this right now.
 	for(var/i in 1 to (6*breakout_time * 2)) //minutes * 6 * 5seconds * 2
-		playsound(src.loc, 'sound/effects/grillehit.ogg', 100, 1)
-		animate_shake()
-
-		if(!do_after(escapee, 50)) //5 seconds
+		if(!do_after(escapee, 50, src)) //5 seconds
 			breakout = 0
 			return
-		if(!escapee || escapee.stat || escapee.loc != src)
+		if(!escapee || escapee.incapacitated() || escapee.loc != src)
 			breakout = 0
 			return //closet/user destroyed OR user dead/unconcious OR user no longer in closet OR closet opened
 		//Perform the same set of checks as above for weld and lock status to determine if there is even still a point in 'resisting'...
@@ -364,10 +362,14 @@
 			breakout = 0
 			return
 
+		playsound(src.loc, 'sound/effects/grillehit.ogg', 100, 1)
+		animate_shake()
+		add_fingerprint(escapee)
+
 	//Well then break it!
 	breakout = 0
 	escapee << "<span class='warning'>You successfully break out!</span>"
-	visible_message("<span class='danger'>\the [escapee] successfully broke out of \the [src]!</span>")
+	visible_message("<span class='danger'>\The [escapee] successfully broke out of \the [src]!</span>")
 	playsound(src.loc, 'sound/effects/grillehit.ogg', 100, 1)
 	break_open()
 	animate_shake()

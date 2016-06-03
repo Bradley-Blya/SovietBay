@@ -148,6 +148,8 @@
 					C.status |= ORGAN_DEAD
 			H.update_body(1)
 		mob.adjustToxLoss(15*multiplier)
+	vampire
+		stage = 3
 
 	deactivate(var/mob/living/carbon/mob,var/multiplier)
 		if(istype(mob, /mob/living/carbon/human))
@@ -228,7 +230,7 @@
 			if (B && B.damage < B.min_broken_damage)
 				B.take_damage(5)
 		else
-			mob.setBrainLoss(50)
+			mob.setBrainLoss(10)
 
 /datum/disease2/effect/hallucinations
 	name = "Hallucinational Syndrome"
@@ -279,7 +281,7 @@
 		else
 			data = pick("bicaridine", "kelotane", "anti_toxin", "inaprovaline", "space_drugs", "sugar",
 						"tramadol", "dexalin", "cryptobiolin", "impedrezene", "hyperzine", "ethylredoxrazine",
-						"mindbreaker", "nutriment")
+						"mindbreaker", "glucose")
 		var/datum/reagent/R = chemical_reagents_list[data]
 		name = "[initial(name)] ([initial(R.name)])"
 

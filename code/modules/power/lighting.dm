@@ -47,8 +47,8 @@
 	if (istype(W, /obj/item/weapon/wrench))
 		if (src.stage == 1)
 			playsound(src.loc, 'sound/items/Ratchet.ogg', 75, 1)
-			usr << "You begin deconstructing [src]."
-			if (!do_after(usr, 30))
+			usr << "You begin deconstructing \a [src]."
+			if (!do_after(usr, 30,src))
 				return
 			new /obj/item/stack/material/steel( get_turf(src.loc), sheets_refunded )
 			user.visible_message("[user.name] deconstructs [src].", \
@@ -160,7 +160,7 @@
 	icon_state = "bulb1"
 	base_state = "bulb"
 	fitting = "bulb"
-	brightness_range = 4
+	brightness_range = 6
 	brightness_power = 2
 	brightness_color = "#a0a080"
 	desc = "A small lighting fixture."
@@ -198,7 +198,7 @@
 	..()
 
 	spawn(2)
-		on = has_power()
+		on = powered()
 
 		switch(fitting)
 			if("tube")
@@ -273,7 +273,7 @@
 	if(!(status == LIGHT_OK||status == LIGHT_BURNED))
 		return
 	visible_message("<span class='danger'>[user] smashes the light!</span>")
-	user.do_attack_animation(src)
+	attack_animation(user)
 	broken()
 	return 1
 
@@ -325,7 +325,7 @@
 				brightness_range = L.brightness_range
 				brightness_power = L.brightness_power
 				brightness_color = L.brightness_color
-				on = has_power()
+				on = powered()
 				update()
 
 				user.drop_item()	//drop the item to update overlays and such
@@ -387,7 +387,7 @@
 			return
 
 		user << "You stick \the [W] into the light socket!"
-		if(has_power() && (W.flags & CONDUCT))
+		if(powered() && (W.flags & CONDUCT))
 			var/datum/effect/effect/system/spark_spread/s = new /datum/effect/effect/system/spark_spread
 			s.set_up(3, 1, src)
 			s.start()
@@ -398,7 +398,7 @@
 
 // returns whether this light has power
 // true if area has power and lightswitch is on
-/obj/machinery/light/proc/has_power()
+/obj/machinery/light/powered()
 	var/area/A = get_area(src)
 	return A && A.lightswitch && (!A.requires_power || A.power_light)
 
@@ -568,7 +568,7 @@
 // called when area power state changes
 /obj/machinery/light/power_change()
 	spawn(10)
-		seton(has_power())
+		seton(powered())
 
 // called when on fire
 

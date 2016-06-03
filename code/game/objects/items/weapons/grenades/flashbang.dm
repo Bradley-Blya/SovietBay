@@ -22,18 +22,14 @@
 			B.update_icon()
 
 		new/obj/effect/sparks(src.loc)
-		new/obj/effect/effect/smoke/illumination(src.loc, brightness=15)
+		new/obj/effect/effect/smoke/illumination(src.loc, 5, range=30, power=30, color="#FFFFFF")
 		qdel(src)
 		return
 
 	proc/bang(var/turf/T , var/mob/living/carbon/M)					// Added a new proc called 'bang' that takes a location and a person to be banged.
-		if (locate(/obj/item/weapon/cloaking_device, M))			// Called during the loop that bangs people in lockers/containers and when banging
-			for(var/obj/item/weapon/cloaking_device/S in M)			// people in normal view.  Could theroetically be called during other explosions.
-				S.active = 0										// -- Polymorph
-				S.icon_state = "shield0"
-
-		M << "<span class='danger'>BANG</span>"
-		playsound(src.loc, 'sound/effects/bang.ogg', 50, 1, 5)
+		M << "<span class='danger'>BANG</span>"						// Called during the loop that bangs people in lockers/containers and when banging
+		playsound(src.loc, 'sound/effects/bang.ogg', 50, 1, 30)		// people in normal view.  Could theroetically be called during other explosions.
+																	// -- Polymorph
 
 //Checking for protections
 		var/eye_safety = 0

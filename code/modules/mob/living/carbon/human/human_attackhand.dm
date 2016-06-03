@@ -79,7 +79,7 @@
 
 				H.visible_message("<span class='danger'>\The [H] is trying perform CPR on \the [src]!</span>")
 
-				if(!do_after(H, 30))
+				if(!do_after(H, 30, src))
 					return
 
 				adjustOxyLoss(-(min(getOxyLoss(), 5)))
@@ -117,7 +117,31 @@
 			return 1
 
 		if(I_HURT)
-
+			//Vampire code
+			if(H.zone_sel && M.zone_sel.selecting == "head")
+				if(H.mind && H.mind.vampire && !H.mind.vampire.draining)
+					//if((head && (head.flags & HEADCOVERSMOUTH)) || (wear_mask && (wear_mask.flags & MASKCOVERSMOUTH)))
+						//H << "\red Remove their mask!"
+						//return 0
+					//if((H.head && (H.head.flags & HEADCOVERSMOUTH)) || (H.wear_mask && (H.wear_mask.flags & MASKCOVERSMOUTH)))
+						//H << "\red Remove your mask!"
+						//return 0
+					if(mind && mind.vampire)
+						H << "\red Your fangs fail to pierce [src.name]'s cold flesh"
+						return 0
+					if(get_species() == "Machine")
+						H << "\red They have no blood"
+						return 0
+					//we're good to suck the blood, blaah
+					//and leave an attack log
+					H.attack_log += text("\[[time_stamp()]\] <font color='red'>Bit [src.name] ([src.ckey]) in the neck and draining their blood</font>")
+					src.attack_log += text("\[[time_stamp()]\] <font color='orange'>Has been bit in the neck by [H.name] ([H.ckey])</font>")
+					msg_admin_attack("[key_name_admin(H)] bit [key_name_admin(src)] in the neck - <A HREF='?_src_=holder;adminplayerobservecoodjump=1;X=[M.x];Y=[M.y];Z=[M.z]'>JMP</a>")
+					H.handle_bloodsucking(src)
+				//					var/datum/organ/external/affecting = get_organ(src.zone_sel.selecting)
+				//					affecting.take_damage(10,0,1,0,"dual puncture marks") //this does not work and causes runtimes.
+					return
+				//end vampire codes
 			if(!istype(H))
 				attack_generic(H,rand(1,3),"punched")
 				return
@@ -285,7 +309,7 @@
 
 /mob/living/carbon/human/attack_generic(var/mob/user, var/damage, var/attack_message)
 
-	if(!damage)
+	if(!damage || !istype(user))
 		return
 
 	user.attack_log += text("\[[time_stamp()]\] <font color='red'>attacked [src.name] ([src.ckey])</font>")
@@ -320,7 +344,7 @@
 		return 0
 
 	user.visible_message("<span class='warning'>[user] begins to dislocate [src]'s [organ.joint]!</span>")
-	if(do_after(user, 100))
+	if(do_after(user, 100, progress = 0))
 		organ.dislocate(1)
 		src.visible_message("<span class='danger'>[src]'s [organ.joint] [pick("gives way","caves in","crumbles","collapses")]!</span>")
 		return 1

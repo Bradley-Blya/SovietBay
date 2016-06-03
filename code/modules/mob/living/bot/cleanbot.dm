@@ -56,7 +56,7 @@
 		path -= path[1]
 		return 1
 	return
-		
+
 /mob/living/bot/cleanbot/Life()
 	..()
 
@@ -67,7 +67,7 @@
 		return
 	if(cleaning)
 		return
-	
+
 	if(!screwloose && !oddbutton && prob(5))
 		custom_emote(2, "makes an excited beeping booping sound!")
 
@@ -84,7 +84,7 @@
 			ignorelist -= gib
 
 		// Find a target
-	
+
 	if(pulledby) // Don't wiggle if someone pulls you
 		patrol_path = list()
 		return
@@ -156,7 +156,7 @@
 	custom_emote(2, "begins to clean up \the [D]")
 	update_icons()
 	var/cleantime = istype(D, /obj/effect/decal/cleanable/dirt) ? 10 : 50
-	if(do_after(src, cleantime))
+	if(do_after(src, cleantime, D, progress = 0))
 		if(istype(loc, /turf/simulated))
 			var/turf/simulated/f = loc
 			f.dirt = 0
@@ -166,6 +166,7 @@
 		if(D == target)
 			target = null
 	cleaning = 0
+
 	update_icons()
 
 /mob/living/bot/cleanbot/explode()
@@ -202,12 +203,14 @@
 	dat += "Status: <A href='?src=\ref[src];operation=start'>[on ? "On" : "Off"]</A><BR>"
 	dat += "Behaviour controls are [locked ? "locked" : "unlocked"]<BR>"
 	dat += "Maintenance panel is [open ? "opened" : "closed"]"
-	if(!locked || issilicon(user))
+	if(!locked || issilicon(usr) || usr == src)
 		dat += "<BR>Cleans Blood: <A href='?src=\ref[src];operation=blood'>[blood ? "Yes" : "No"]</A><BR>"
 		dat += "<BR>Patrol station: <A href='?src=\ref[src];operation=patrol'>[should_patrol ? "Yes" : "No"]</A><BR>"
 	if(open && !locked)
 		dat += "Odd looking screw twiddled: <A href='?src=\ref[src];operation=screw'>[screwloose ? "Yes" : "No"]</A><BR>"
 		dat += "Weird button pressed: <A href='?src=\ref[src];operation=oddbutton'>[oddbutton ? "Yes" : "No"]</A>"
+	if(istype(user, /mob/living/silicon/ai))
+		dat += "<BR><A href='?src=\ref[src];operation=ai_assume'>Assume AI control</A><BR>"
 
 	user << browse("<HEAD><TITLE>Cleaner v1.0 controls</TITLE></HEAD>[dat]", "window=autocleaner")
 	onclose(user, "autocleaner")
@@ -240,6 +243,10 @@
 		if("oddbutton")
 			oddbutton = !oddbutton
 			usr << "<span class='notice'>You press the weird button.</span>"
+		if("ai_assume")
+			if(istype(usr, /mob/living/silicon/ai))
+				var/mob/living/silicon/ai/AI = usr
+				assume_ai(AI)
 	attack_hand(usr)
 
 /mob/living/bot/cleanbot/emag_act(var/remaining_uses, var/mob/user)
@@ -249,6 +256,7 @@
 			user << "<span class='notice'>The [src] buzzes and beeps.</span>"
 		oddbutton = 1
 		screwloose = 1
+		kick_ai()
 		return 1
 
 /mob/living/bot/cleanbot/proc/get_targets()

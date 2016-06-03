@@ -15,8 +15,8 @@
 	msg = sanitize(msg)
 	if(!msg)	return
 
-	if(!(prefs.toggles & CHAT_OOC))
-		src << "<span class='warning'>You have OOC muted.</span>"
+	if(!is_preference_enabled(/datum/client_preference/show_ooc))
+		src << "<span class='warning'>You have disabled OOC. You can turn it on in Character Setup.</span>"
 		return
 
 	if(!holder)
@@ -50,7 +50,7 @@
 			ooc_style = "admin"
 
 	for(var/client/target in clients)
-		if(target.prefs.toggles & CHAT_OOC)
+		if(target.is_preference_enabled(/datum/client_preference/show_ooc))
 			var/display_name = src.key
 			if(holder)
 				if(holder.fakekey)
@@ -83,7 +83,7 @@
 	if(!msg)
 		return
 
-	if(!(prefs.toggles & CHAT_LOOC))
+	if(!is_preference_enabled(/datum/client_preference/show_looc))
 		src << "<span class='danger'>You have LOOC muted.</span>"
 		return
 
@@ -140,20 +140,20 @@
 				listening_obj |= O
 
 		for(var/mob/M in player_list)
-			if(!M.client || !(M.client.prefs.toggles & CHAT_LOOC))
-				continue
 			if(isAI(M))
 				var/mob/living/silicon/ai/A = M
-				if(A.eyeobj.locs[1] in hearturfs)
+				if(A.eyeobj && (A.eyeobj.locs[1] in hearturfs))
 					eye_heard |= M.client
 					listening |= M.client
 					continue
-				
+
 			if(M.loc && M.locs[1] in hearturfs)
 				listening |= M.client
 
-	
+
 	for(var/client/t in listening)
+		if(!t.is_preference_enabled(/datum/client_preference/show_looc))
+			continue
 		var/admin_stuff = ""
 		var/prefix = ""
 		if(t in admins)
@@ -169,7 +169,7 @@
 
 
 	for(var/client/adm in admins)	//Now send to all admins that weren't in range.
-		if(!(adm in listening))
+		if(!(adm in listening) && adm.is_preference_enabled(/datum/client_preference/show_looc))
 			var/admin_stuff = "/([key])([admin_jump_link(mob, adm.holder)])"
 			var/prefix = "(R)"
 

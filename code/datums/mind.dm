@@ -52,6 +52,7 @@
 
 	var/datum/faction/faction 			//associated faction
 	var/datum/changeling/changeling		//changeling holder
+	var/datum/vampire/vampire //vampire holder
 
 	var/rev_cooldown = 0
 
@@ -60,6 +61,9 @@
 
 	//put this here for easier tracking ingame
 	var/datum/money_account/initial_account
+
+	//used for optional self-objectives that antagonists can give themselves, which are displayed at the end of the round.
+	var/ambitions
 
 /datum/mind/New(var/key)
 	src.key = key
@@ -72,6 +76,8 @@
 		if(changeling)
 			current.remove_changeling_powers()
 			current.verbs -= /datum/changeling/proc/EvolutionMenu
+		if(vampire)
+			current.remove_vampire_powers()
 		current.mind = null
 
 		nanomanager.user_transferred(current, new_character) // transfer active NanoUI instances to new user
@@ -81,8 +87,13 @@
 	current = new_character		//link ourself to our new body
 	new_character.mind = src	//and link our new body to ourself
 
+	if(learned_spells && learned_spells.len)
+		restore_spells(new_character)
+
 	if(changeling)
 		new_character.make_changeling()
+	if(vampire)
+		new_character.make_vampire()
 
 	if(active)
 		new_character.key = key		//now transfer the key to link the client to our new body
@@ -102,7 +113,9 @@
 			output += "<B>Objective #[obj_count]</B>: [objective.explanation_text]"
 			obj_count++
 
-	recipient << browse(output,"window=memory")
+	if(ambitions)
+		output += "<HR><B>Ambitions:</B> [ambitions]<br>"
+	recipient << browse(sanitize_local(output, SANITIZE_BROWSER),"window=memory")
 
 /datum/mind/proc/edit_memory()
 	if(!ticker || !ticker.mode)
@@ -135,15 +148,16 @@
 
 	else
 		out += "None."
-	out += "<br><a href='?src=\ref[src];obj_add=1'>\[add\]</a>"
-	usr << browse(out, "window=edit_memory[src]")
+	out += "<br><a href='?src=\ref[src];obj_add=1'>\[add\]</a><br><br>"
+	out += "<b>Ambitions:</b> [ambitions ? ambitions : "None"] <a href='?src=\ref[src];amb_edit=\ref[src]'>\[edit\]</a></br>"
+	usr << browse(sanitize_local(out, SANITIZE_BROWSER), "window=edit_memory[src]")
 
 /datum/mind/Topic(href, href_list)
 	if(!check_rights(R_ADMIN))	return
 
 	if(href_list["add_antagonist"])
 		var/datum/antagonist/antag = all_antag_types[href_list["add_antagonist"]]
-		if(antag) 
+		if(antag)
 			if(antag.add_antagonist(src, 1, 1, 0, 1, 1)) // Ignore equipment and role type for this.
 				log_admin("[key_name_admin(usr)] made [key_name(src)] into a [antag.role_text].")
 			else
@@ -174,6 +188,24 @@
 		var/new_memo = sanitize(input("Write new memory", "Memory", memory) as null|message)
 		if (isnull(new_memo)) return
 		memory = new_memo
+
+	else if (href_list["amb_edit"])
+		var/datum/mind/mind = locate(href_list["amb_edit"])
+		if(!mind)
+			return
+		var/new_ambition = input("Enter a new ambition", "Memory", mind.ambitions) as null|message
+		if(isnull(new_ambition))
+			return
+		new_ambition = sanitize(new_ambition)
+		if(mind)
+			if(new_ambition)
+				mind.current << "<span class='warning'>Your ambitions have been changed by higher powers, they are now: [mind.ambitions]</span>"
+				log_and_message_admins("made [key_name(mind.current)]'s ambitions be '[mind.ambitions]'.")
+			else
+				mind.current << "<span class='warning'>Your ambitions have been unmade by higher powers.</span>"
+				log_and_message_admins("has cleared [key_name(mind.current)]'s ambitions.")
+		else
+			usr << "<span class='warning'>The mind has ceased to be.</span>"
 
 	else if (href_list["obj_edit"] || href_list["obj_add"])
 		var/datum/objective/objective
@@ -439,6 +471,7 @@
 	assigned_job =    null
 	//faction =       null //Uncommenting this causes a compile error due to 'undefined type', fucked if I know.
 	changeling =      null
+	vampire =         null
 	initial_account = null
 	objectives =      list()
 	special_verbs =   list()

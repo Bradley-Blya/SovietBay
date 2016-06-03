@@ -1,7 +1,5 @@
 //Config stuff
 #define PRISON_MOVETIME 150	//Time to station is milliseconds.
-#define PRISON_STATION_AREATYPE "/area/shuttle/prison/station" //Type of the prison shuttle area for station
-#define PRISON_DOCK_AREATYPE "/area/shuttle/prison/prison"	//Type of the prison shuttle area for dock
 
 var/prison_shuttle_moving_to_station = 0
 var/prison_shuttle_moving_to_prison = 0
@@ -29,7 +27,7 @@ var/prison_shuttle_timeleft = 0
 	attackby(I as obj, user as mob)
 		if(istype(I, /obj/item/weapon/screwdriver))
 			playsound(src.loc, 'sound/items/Screwdriver.ogg', 50, 1)
-			if(do_after(user, 20))
+			if(do_after(user, 20, src))
 				var/obj/structure/computerframe/A = new /obj/structure/computerframe( src.loc )
 				var/obj/item/weapon/circuitboard/prison_shuttle/M = new /obj/item/weapon/circuitboard/prison_shuttle( A )
 				for (var/obj/C in src)

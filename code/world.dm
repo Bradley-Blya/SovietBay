@@ -25,6 +25,9 @@ var/global/datum/global_init/init = new ()
 
 	qdel(src) //we're done
 
+/datum/global_init/Destroy()
+	return 1
+
 /var/game_id = null
 /proc/generate_gameid()
 	if(game_id != null)
@@ -172,7 +175,7 @@ var/world_topic_spam_protect_time = world.timeofday
 		// This is dumb, but spacestation13.com's banners break if player count isn't the 8th field of the reply, so... this has to go here.
 		s["players"] = 0
 		s["stationtime"] = worldtime2text()
-		s["roundduration"] = round_duration()
+		s["roundduration"] = round_duration_as_text()
 
 		if(input["status"] == "2")
 			var/list/players = list()
@@ -428,9 +431,14 @@ var/world_topic_spam_protect_time = world.timeofday
 
 	processScheduler.stop()
 
-	for(var/client/C in clients)
-		if(config.server)	//if you set a server location in config.txt, it sends you there instead of trying to reconnect to the same world address. -- NeoFite
+	if(config.server)	//if you set a server location in config.txt, it sends you there instead of trying to reconnect to the same world address. -- NeoFite
+		for(var/client/C in clients)
 			C << link("byond://[config.server]")
+
+	if(config.wait_for_sigusr1_reboot && reason != 3)
+		text2file("foo", "reboot_called")
+		world << "<span class=danger>World reboot waiting for external scripts. Please be patient.</span>"
+		return
 
 	..(reason)
 
@@ -439,6 +447,9 @@ var/world_topic_spam_protect_time = world.timeofday
 	return 1
 
 /world/proc/load_mode()
+	if(!fexists("data/mode.txt"))
+		return
+
 	var/list/Lines = file2list("data/mode.txt")
 	if(Lines.len)
 		if(Lines[1])
@@ -456,8 +467,7 @@ var/world_topic_spam_protect_time = world.timeofday
 	return 1
 
 /world/proc/load_motd()
-	join_motd = file2text("config/motd.txt")
-
+	join_motd = sanitize_local(file2text("config/motd.txt"))
 
 /proc/load_configuration()
 	config = new /datum/configuration()
@@ -477,7 +487,7 @@ var/world_topic_spam_protect_time = world.timeofday
 		if (!text)
 			error("Failed to load config/mods.txt")
 		else
-			var/list/lines = text2list(text, "\n")
+			var/list/lines = splittext(text, "\n")
 			for(var/line in lines)
 				if (!line)
 					continue
@@ -498,7 +508,7 @@ var/world_topic_spam_protect_time = world.timeofday
 		if (!text)
 			error("Failed to load config/mentors.txt")
 		else
-			var/list/lines = text2list(text, "\n")
+			var/list/lines = splittext(text, "\n")
 			for(var/line in lines)
 				if (!line)
 					continue
@@ -515,16 +525,16 @@ var/world_topic_spam_protect_time = world.timeofday
 /world/proc/update_status()
 	var/s = ""
 
+	if (config && config.server_group)
+		if (config && config.server_group_url)
+			s += "<b>\[<a href=\"[config.server_group_url]\">[config.server_group]</a>\] - </b>"
+		else
+			s += "<b>\[[config.server_group]\] - </b>"
+
 	if (config && config.server_name)
 		s += "<b>[config.server_name]</b> &#8212; "
 
-	s += "<b>[station_name()]</b>";
-	s += " ("
-	s += "<a href=\"http://\">" //Change this to wherever you want the hub to link to.
-//	s += "[game_version]"
-	s += "Default"  //Replace this with something else. Or ever better, delete it and uncomment the game version.
-	s += "</a>"
-	s += ")"
+	s += "<b>[station_name()]</b>(<a href=\"[config.forumurl]\">forum</a>)"
 
 	var/list/features = list()
 
@@ -560,7 +570,7 @@ var/world_topic_spam_protect_time = world.timeofday
 		features += "hosted by <b>[config.hostedby]</b>"
 
 	if (features)
-		s += ": [list2text(features, ", ")]"
+		s += ": [jointext(features, ", ")]"
 
 	/* does this help? I do not know */
 	if (src.status != s)

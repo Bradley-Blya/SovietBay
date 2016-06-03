@@ -188,6 +188,26 @@
 		return ..()
 	if(istype(W, /obj/item/weapon/melee/energy/blade))
 		emag_act(INFINITY, user)
+		return
+	if(locked && istype(W, /obj/item/device/multitool))
+		var/obj/item/device/multitool/multi = W
+		if(multi.in_use)
+			user << "<span class='warning'>This multitool is already in use!</span>"
+			return
+		multi.in_use = 1
+		var/i
+		for(i=0, i<6, i++)
+			user.visible_message("<span class='warning'>[user] picks in wires of the [src.name] with a multitool.</span>",
+			"<span class='warning'>Resetting circuitry ([i]/6)...</span>")
+			if(!do_after(user,500) || opened)
+				multi.in_use=0
+				return
+		src.locked=!src.locked
+		src.update_icon()
+		multi.in_use=0
+		user.visible_message("<span class='warning'>[user] [src.locked?"locks":"unlocks"] [name] with a multitool.</span>",
+		"<span class='warning'>You [src.locked?"enable":"disable"] the locking modules.</span>")
+		return
 	if(!opened)
 		src.togglelock(user)
 		return
@@ -302,19 +322,35 @@
 	new /obj/item/solar_assembly(src)
 	new /obj/item/solar_assembly(src)
 	new /obj/item/solar_assembly(src)
-	new /obj/item/solar_assembly(src)
-	new /obj/item/solar_assembly(src)
-	new /obj/item/solar_assembly(src)
-	new /obj/item/solar_assembly(src)
-	new /obj/item/solar_assembly(src)
-	new /obj/item/solar_assembly(src)
-	new /obj/item/solar_assembly(src)
-	new /obj/item/solar_assembly(src)
-	new /obj/item/solar_assembly(src)
-	new /obj/item/solar_assembly(src)
 	new /obj/item/weapon/circuitboard/solar_control(src)
 	new /obj/item/weapon/tracker_electronics(src)
 	new /obj/item/weapon/paper/solar(src)
+
+/obj/structure/closet/crate/solar_assembly
+	name = "solar assembly crate"
+
+/obj/structure/closet/crate/solar_assembly/New()
+	..()
+	new /obj/item/solar_assembly(src)
+	new /obj/item/solar_assembly(src)
+	new /obj/item/solar_assembly(src)
+	new /obj/item/solar_assembly(src)
+	new /obj/item/solar_assembly(src)
+	new /obj/item/solar_assembly(src)
+	new /obj/item/solar_assembly(src)
+	new /obj/item/solar_assembly(src)
+	new /obj/item/solar_assembly(src)
+	new /obj/item/solar_assembly(src)
+	new /obj/item/solar_assembly(src)
+	new /obj/item/solar_assembly(src)
+	new /obj/item/solar_assembly(src)
+	new /obj/item/solar_assembly(src)
+	new /obj/item/solar_assembly(src)
+	new /obj/item/solar_assembly(src)
+	new /obj/item/solar_assembly(src)
+	new /obj/item/solar_assembly(src)
+	new /obj/item/solar_assembly(src)
+	new /obj/item/solar_assembly(src)
 
 /obj/structure/closet/crate/freezer
 	name = "freezer"

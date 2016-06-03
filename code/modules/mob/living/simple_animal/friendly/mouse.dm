@@ -55,6 +55,10 @@
 		else if(prob(5))
 			audible_emote("snuffles.")
 
+/mob/living/simple_animal/mouse/lay_down()
+	..()
+	icon_state = resting ? "mouse_[body_color]_sleep" : "mouse_[body_color]"
+
 /mob/living/simple_animal/mouse/New()
 	..()
 
@@ -62,7 +66,7 @@
 	verbs += /mob/living/proc/hide
 
 	if(name == initial(name))
-		name = "[name] ([rand(1, 1000)])"
+		name = "[name] ([sequential_id(/mob/living/simple_animal/mouse)])"
 	real_name = name
 
 	if(!body_color)
@@ -84,7 +88,7 @@
 	var/mob/living/carbon/H = over_object
 	if(!istype(H) || !Adjacent(H)) return ..()
 
-	if(H.a_intent == "help")
+	if(H.a_intent == I_HELP)
 		get_scooped(H)
 		return
 	else
@@ -127,6 +131,7 @@
 	..()
 	// Change my name back, don't want to be named Tom (666)
 	name = initial(name)
+	real_name = name
 
 /mob/living/simple_animal/mouse/cannot_use_vents()
 	return

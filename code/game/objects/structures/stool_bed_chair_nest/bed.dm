@@ -130,7 +130,7 @@
 		var/obj/item/weapon/grab/G = W
 		var/mob/living/affecting = G.affecting
 		user.visible_message("<span class='notice'>[user] attempts to buckle [affecting] into \the [src]!</span>")
-		if(do_after(user, 20))
+		if(do_after(user, 20, src))
 			affecting.loc = loc
 			spawn(0)
 				if(buckle_mob(affecting))
@@ -220,7 +220,7 @@
 		var/obj/item/roller_holder/RH = W
 		if(!RH.held)
 			user << "<span class='notice'>You collect the roller bed.</span>"
-			src.loc = RH
+			src.forceMove(RH)
 			RH.held = src
 			return
 
@@ -250,11 +250,10 @@
 	held = null
 
 
-/obj/structure/bed/roller/Move()
-	..()
+/obj/structure/bed/roller/proc/move_buckled()
 	if(buckled_mob)
 		if(buckled_mob.buckled == src)
-			buckled_mob.loc = src.loc
+			buckled_mob.forceMove(src.loc)
 		else
 			buckled_mob = null
 
@@ -270,6 +269,15 @@
 		density = 0
 		icon_state = "down"
 
+	return ..()
+
+/obj/structure/bed/roller/buckle_mob()
+	. = ..()
+	if(.)
+		moved_event.register(src, src, /obj/structure/bed/roller/proc/move_buckled)
+
+/obj/structure/bed/roller/unbuckle_mob()
+	moved_event.unregister(src, src)
 	return ..()
 
 /obj/structure/bed/roller/MouseDrop(over_object, src_location, over_location)

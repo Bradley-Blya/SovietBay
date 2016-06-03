@@ -14,6 +14,18 @@
 
 /obj/item/weapon/beartrap/proc/can_use(mob/user)
 	return (user.IsAdvancedToolUser() && !issilicon(user) && !user.stat && !user.restrained())
+	
+/obj/item/weapon/beartrap/user_unbuckle_mob(mob/user as mob)
+	if(buckled_mob && can_use(user))
+		user.visible_message(
+			"<span class='notice'>\The [user] begins freeing \the [buckled_mob] from \the [src].</span>",
+			"<span class='notice'>You carefully begin to free \the [buckled_mob] from \the [src].</span>",
+			"<span class='notice'>You hear metal creaking.</span>"
+			)
+		if(do_after(user, 60, src))
+			user.visible_message("<span class='notice'>\The [buckled_mob] has been freed from \the [src] by \the [user].</span>")
+			unbuckle_mob()
+			anchored = 0
 
 /obj/item/weapon/beartrap/attack_self(mob/user as mob)
 	..()
@@ -24,9 +36,9 @@
 			"You hear the slow creaking of a spring."
 			)
 
-		if (do_after(user, 60))
+		if (do_after(user, 60, src))
 			user.visible_message(
-				"<span class='danger'>[user] has deployed \the [src].</span>",
+				"<span class='danger'>\The [user] has deployed \the [src].</span>",
 				"<span class='danger'>You have deployed \the [src]!</span>",
 				"You hear a latch click loudly."
 				)
@@ -37,22 +49,15 @@
 			anchored = 1
 
 /obj/item/weapon/beartrap/attack_hand(mob/user as mob)
-	if(buckled_mob && can_use(user))
-		user.visible_message(
-			"<span class='notice'>[user] begins freeing [buckled_mob] from \the [src].</span>",
-			"<span class='notice'>You carefully begin to free [buckled_mob] from \the [src].</span>",
-			)
-		if(do_after(user, 60))
-			user.visible_message("<span class='notice'>[buckled_mob] has been freed from \the [src] by [user].</span>")
-			unbuckle_mob()
-			anchored = 0
+	if(buckled_mob)
+		user_unbuckle_mob(user)
 	else if(deployed && can_use(user))
 		user.visible_message(
 			"<span class='danger'>[user] starts to disarm \the [src].</span>",
 			"<span class='notice'>You begin disarming \the [src]!</span>",
 			"You hear a latch click followed by the slow creaking of a spring."
 			)
-		if(do_after(user, 60))
+		if(do_after(user, 60, src))
 			user.visible_message(
 				"<span class='danger'>[user] has disarmed \the [src].</span>",
 				"<span class='notice'>You have disarmed \the [src]!</span>"

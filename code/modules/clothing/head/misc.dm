@@ -250,3 +250,43 @@
 	desc = "An orange piece of cloth, worn on the head."
 	icon_state = "orange_bandana"
 	body_parts_covered = 0
+
+/obj/item/clothing/head/cat
+	name = "cat suit head"
+	desc = "Who said 'meow'? 'Made by 'Lego Ink.'"
+	icon_state = "cat_mask"
+	item_state = "cat_mask"
+	body_parts_covered = HEAD|FACE|EYES
+
+//Hijabs
+
+/obj/item/clothing/head/hijab
+	name = "hijab"
+	desc = "A veil which is wrapped to cover the head and chest."
+	icon_state = "hijab"
+	body_parts_covered = 0
+	flags_inv = BLOCKHAIR
+
+/obj/item/clothing/head/kippa
+	name = "kippa"
+	desc = "A small, brimless cap."
+	icon_state = "kippa"
+	body_parts_covered = 0
+
+/obj/item/clothing/head/turban
+	name = "turban"
+	desc = "A sturdy cloth, worn around the head."
+	icon_state = "turban"
+	body_parts_covered = 0
+	flags_inv = BLOCKHEADHAIR
+
+//lifeweb
+
+/obj/item/clothing/head/helmet/cerberus
+	name = "cerberus mask"
+	desc = "Old mask made of silver alloy."
+	icon_state = "cerberus"
+	item_flags = THICKMATERIAL
+	flags_inv = HIDEMASK|HIDEEARS|HIDEEYES|HIDEFACE|BLOCKHAIR
+	body_parts_covered = HEAD|FACE|EYES
+	armor = list(melee = 10, bullet = 5, laser = 5,energy = 5, bomb = 0, bio = 0, rad = 0)

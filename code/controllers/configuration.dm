@@ -2,6 +2,8 @@ var/list/gamemode_cache = list()
 
 /datum/configuration
 	var/server_name = null				// server name (for world name / status)
+	var/server_group = null				// server group (for world name / status)
+	var/server_group_url = null			// server group site (for status)
 	var/server_suffix = 0				// generate numeric suffix based on server port
 
 	var/nudge_script_path = "nudge.py"  // where the nudge.py script is located
@@ -178,15 +180,10 @@ var/list/gamemode_cache = list()
 	var/irc_bot_export = 0 // whether the IRC bot in use is a Bot32 (or similar) instance; Bot32 uses world.Export() instead of nudge.py/libnudge
 	var/main_irc = ""
 	var/admin_irc = ""
+	var/announce_shuttle_dock_to_irc = FALSE
 	var/python_path = "" //Path to the python executable.  Defaults to "python" on windows and "/usr/bin/env python2" on unix
 	var/use_lib_nudge = 0 //Use the C library nudge instead of the python nudge.
 	var/use_overmap = 0
-
-	var/list/station_levels = list(1)				// Defines which Z-levels the station exists on.
-	var/list/admin_levels= list(2)					// Defines which Z-levels which are for admin functionality, for example including such areas as Central Command and the Syndicate Shuttle
-	var/list/contact_levels = list(1, 5)			// Defines which Z-levels which, for example, a Code Red announcement may affect
-	var/list/player_levels = list(1, 3, 4, 5, 6)	// Defines all Z-levels a character can typically reach
-	var/list/sealed_levels = list() 				// Defines levels that do not allow random transit at the edges.
 
 	// Event settings
 	var/expected_round_length = 3 * 60 * 60 * 10 // 3 hours
@@ -201,12 +198,14 @@ var/list/gamemode_cache = list()
 	var/list/event_delay_upper = list(EVENT_LEVEL_MUNDANE = 9000,	EVENT_LEVEL_MODERATE = 27000,	EVENT_LEVEL_MAJOR = 42000)
 
 	var/aliens_allowed = 0
+	var/alien_eggs_allowed = 0
 	var/ninjas_allowed = 0
 	var/abandon_allowed = 1
 	var/ooc_allowed = 1
 	var/looc_allowed = 1
 	var/dooc_allowed = 1
 	var/dsay_allowed = 1
+	var/explosions_allowed = 1
 
 	var/starlight = 0	// Whether space turfs have ambient light or not
 
@@ -220,6 +219,12 @@ var/list/gamemode_cache = list()
 
 	var/ghosts_can_possess_animals = 0
 	var/delist_when_no_admins = FALSE
+
+	var/nanoui_legacy = 0
+
+	var/allow_map_switching = 0 // Whether map switching is allowed
+	var/auto_map_vote = 0 // Automatically call a map vote at end of round and switch to the selected map
+	var/wait_for_sigusr1_reboot = 0 // Don't allow reboot unless it was caused by SIGUSR1
 
 /datum/configuration/New()
 	var/list/L = typesof(/datum/game_mode) - /datum/game_mode
@@ -266,7 +271,7 @@ var/list/gamemode_cache = list()
 		if(type == "config")
 			switch (name)
 				if ("resource_urls")
-					config.resource_urls = text2list(value, " ")
+					config.resource_urls = splittext(value, " ")
 
 				if ("admin_legacy_system")
 					config.admin_legacy_system = 1
@@ -400,6 +405,12 @@ var/list/gamemode_cache = list()
 				if ("servername")
 					config.server_name = value
 
+				if ("servergroup")
+					config.server_group = value
+
+				if ("servergroupurl")
+					config.server_group_url = value
+
 				if ("serversuffix")
 					config.server_suffix = 1
 
@@ -449,6 +460,9 @@ var/list/gamemode_cache = list()
 				if ("disable_dsay")
 					config.dsay_allowed = 0
 
+				if ("disable_explosions")
+					config.explosions_allowed = 0
+
 				if ("disable_respawn")
 					config.abandon_allowed = 0
 
@@ -467,12 +481,27 @@ var/list/gamemode_cache = list()
 				if ("aliens_allowed")
 					config.aliens_allowed = 1
 
+				if("alien_eggs_allowed")
+					config.alien_eggs_allowed = 1
+
 				if ("ninjas_allowed")
 					config.ninjas_allowed = 1
 
 				if ("objectives_disabled")
-					config.objectives_disabled = 1
-
+					if(!value)
+						log_misc("Could not find value for objectives_disabled in configuration.")
+						config.objectives_disabled = CONFIG_OBJECTIVE_NONE
+					else
+						switch(value)
+							if("none")
+								config.objectives_disabled = CONFIG_OBJECTIVE_NONE
+							if("verb")
+								config.objectives_disabled = CONFIG_OBJECTIVE_VERB
+							if("all")
+								config.objectives_disabled = CONFIG_OBJECTIVE_ALL
+							else
+								log_misc("Incorrect objective disabled definition: [value]")
+								config.objectives_disabled = CONFIG_OBJECTIVE_NONE
 				if("protect_roles_from_antagonist")
 					config.protect_roles_from_antagonist = 1
 
@@ -612,6 +641,9 @@ var/list/gamemode_cache = list()
 				if("admin_irc")
 					config.admin_irc = value
 
+				if("announce_shuttle_dock_to_irc")
+					config.announce_shuttle_dock_to_irc = TRUE
+
 				if("python_path")
 					if(value)
 						config.python_path = value
@@ -639,18 +671,6 @@ var/list/gamemode_cache = list()
 
 				if("use_overmap")
 					config.use_overmap = 1
-
-				if("station_levels")
-					config.station_levels = text2numlist(value, ";")
-
-				if("admin_levels")
-					config.admin_levels = text2numlist(value, ";")
-
-				if("contact_levels")
-					config.contact_levels = text2numlist(value, ";")
-
-				if("player_levels")
-					config.player_levels = text2numlist(value, ";")
 
 				if("expected_round_length")
 					config.expected_round_length = MinutesToTicks(text2num(value))
@@ -690,7 +710,7 @@ var/list/gamemode_cache = list()
 					config.starlight = value >= 0 ? value : 0
 
 				if("ert_species")
-					config.ert_species = text2list(value, ";")
+					config.ert_species = splittext(value, ";")
 					if(!config.ert_species.len)
 						config.ert_species += "Human"
 
@@ -701,15 +721,27 @@ var/list/gamemode_cache = list()
 					config.aggressive_changelog = 1
 
 				if("default_language_prefixes")
-					var/list/values = text2list(value, " ")
+					var/list/values = splittext(value, " ")
 					if(values.len > 0)
 						language_prefixes = values
 
 				if ("lobby_screens")
-					config.lobby_screens = text2list(value, ";")
+					config.lobby_screens = splittext(value, ";")
 
 				if("delist_when_no_admins")
 					config.delist_when_no_admins = TRUE
+
+				if("nanoui_legacy")
+					config.nanoui_legacy = TRUE
+
+				if("map_switching")
+					config.allow_map_switching = 1
+
+				if("auto_map_vote")
+					config.auto_map_vote = 1
+
+				if("wait_for_sigusr1")
+					config.wait_for_sigusr1_reboot = 1
 
 				else
 					log_misc("Unknown setting in configuration: '[name]'")

@@ -13,7 +13,7 @@
 	if(CE_SPEEDBOOST in chem_effects)
 		return -1
 
-	var/health_deficiency = (100 - health)
+	var/health_deficiency = (maxHealth - health)
 	if(health_deficiency >= 40) tally += (health_deficiency / 25)
 
 	if (!(species && (species.flags & NO_PAIN)))
@@ -24,6 +24,11 @@
 
 	if(wear_suit)
 		tally += wear_suit.slowdown
+
+	//equipment slots that may give slowdown, shoes are handled separately below
+	for(var/obj/item/I in list(wear_suit, back, belt, w_uniform))
+		if(istype(I))
+			tally += I.slowdown
 
 	if(istype(buckled, /obj/structure/bed/chair/wheelchair))
 		for(var/organ_name in list("l_hand","r_hand","l_arm","r_arm"))

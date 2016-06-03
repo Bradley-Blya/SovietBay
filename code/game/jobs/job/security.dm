@@ -38,8 +38,10 @@
 		H.equip_to_slot_or_del(new /obj/item/weapon/gun/energy/gun(H), slot_s_store)
 		if(H.backbag == 1)
 			H.equip_to_slot_or_del(new /obj/item/weapon/handcuffs(H), slot_l_store)
+			H.equip_to_slot_or_del(new /obj/item/weapon/melee/telebaton(H), slot_r_store)
 		else
 			H.equip_to_slot_or_del(new /obj/item/weapon/handcuffs(H), slot_in_backpack)
+			H.equip_to_slot_or_del(new /obj/item/weapon/melee/telebaton(H.back), slot_in_backpack)
 		H.implant_loyalty(H)
 		return 1
 
@@ -119,9 +121,8 @@
 		else
 			H.equip_to_slot_or_del(new /obj/item/clothing/suit/storage/det_trench(H), slot_wear_suit)
 			H.equip_to_slot_or_del(new /obj/item/clothing/head/det(H), slot_head)
+		H.equip_to_slot_or_del(new /obj/item/weapon/storage/briefcase/crimekit(H), slot_r_hand)
 		return 1
-
-
 
 /datum/job/officer
 	title = "Security Officer"

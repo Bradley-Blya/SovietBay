@@ -46,7 +46,7 @@
 				if(!T.implanted) continue
 				var/loc_display = "Unknown"
 				var/mob/living/carbon/M = T.imp_in
-				if((M.z in config.station_levels) && !istype(M.loc, /turf/space))
+				if((M.z in using_map.station_levels) && !istype(M.loc, /turf/space))
 					var/turf/mob_loc = get_turf(M)
 					loc_display = mob_loc.loc
 				if(T.malfunction)
@@ -56,7 +56,7 @@
 				dat += "********************************<BR>"
 			dat += "<HR><A href='?src=\ref[src];lock=1'>Lock Console</A>"
 
-		user << browse(dat, "window=computer;size=400x500")
+		user << browse(sanitize_local(dat, SANITIZE_BROWSER), "window=computer;size=400x500")
 		onclose(user, "computer")
 		return
 

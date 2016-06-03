@@ -32,7 +32,7 @@ var/list/whitelist = list()
 		log_misc("Failed to load config/alienwhitelist.txt")
 		return 0
 	else
-		alien_whitelist = text2list(text, "\n")
+		alien_whitelist = splittext(text, "\n")
 		return 1
 /proc/load_alienwhitelistSQL()
 	var/DBQuery/query = dbcon_old.NewQuery("SELECT * FROM whitelist")
@@ -60,7 +60,7 @@ var/list/whitelist = list()
 		species = "[species]";
 	if(species == "human" || species == "Human")
 		return 1
-	if(check_rights(R_ADMIN, 0))
+	if(check_rights(R_ADMIN, 0, M))
 		return 1
 	if(!alien_whitelist)
 		return 0

@@ -68,7 +68,7 @@ var/const/tk_maxrange = 15
 	flags = NOBLUDGEON
 	//item_state = null
 	w_class = 10.0
-	layer = 20
+	layer = SCREEN_LAYER
 
 	var/last_throw = 0
 	var/atom/movable/focus = null
@@ -85,6 +85,7 @@ var/const/tk_maxrange = 15
 
 //stops TK grabs being equipped anywhere but into hands
 /obj/item/tk_grab/equipped(var/mob/user, var/slot)
+	..()
 	if( (slot == slot_l_hand) || (slot== slot_r_hand) )	return
 	qdel(src)
 	return
