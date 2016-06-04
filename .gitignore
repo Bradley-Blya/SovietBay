@@ -14,3 +14,8 @@ stopserver
 reboot_called
 atupdate
 maps/backup/
+*.bbl
+*.blg
+*.out
+*.synctex
+*.aux

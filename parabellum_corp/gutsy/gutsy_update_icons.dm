@@ -1,11 +1,20 @@
 /mob/living/bot/gutsy/update_icons()
 	if(on)
-		icon_state = "gutsy_active"
-	if(on)
-		set_light(4, 4, "#00FF00")
+		if(icon_state == "gutsy_inactive")
+			flick("gutsy_i2a", src)
+			icon_state = "gutsy_active"
+			set_light(4, 4, "#00FF00")
+			return null
+		else
+			return null
 	else
-		set_light(0)
-		icon_state = "gutsy_inactive"
+		if(icon_state == "gutsy_active")
+			flick("gutsy_a2i", src)
+			icon_state = "gutsy_inactive"
+			set_light(0)
+			return null
+		else
+			return null
 //----------------------------------------------------------------------
 // End of file gutsy_update_icons.dm //---------------------------------
 //----------------------------------------------------------------------

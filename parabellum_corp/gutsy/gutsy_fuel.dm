@@ -1,9 +1,8 @@
 /mob/living/bot/gutsy/attackby(var/obj/item/stack/material/phoron/O, var/mob/user)
-	//..()
-	fuel += fuel_coeff * O.amount
+	..()
+	fuel += fuelCoeff * O.amount
 	qdel(O)
-	icon_state = "gutsy_i2a"
-	return
+	return null
 //----------------------------------------------------------------------
 // End of file gutsy_fuel.dm //-----------------------------------------
 //----------------------------------------------------------------------
