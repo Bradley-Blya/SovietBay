@@ -13,13 +13,26 @@
 	if(fuel>maxFuel)
 		fuel=maxFuel
 	fuel-=fuelPortion
+	if(target != null)
+		path = AStar(loc, get_turf(target), /turf/proc/CardinalTurfsWithAccess, /turf/proc/Distance, 0, 30, id = botcard)
+		//step_to(src, path[1])
+		path -= path[1]
+		if(!path.len && (get_dist(src, target) > 1))
+			world << "TEST2"
+			path = AStar(loc, get_turf(target), /turf/proc/CardinalTurfsWithAccess, /turf/proc/Distance, 0, 30, id = botcard)
+			if(!path)
+				path = list()
+	if(path.len)
+		step_to(src, path[1])
+		path -= path[1]
 	return null
+//----------------------------------------------------------------------
 /mob/living/bot/gutsy/self_destruct()
 	set name="Self destruct"
 	set category="Bot"
 	if(alert("You sure?","Self destruct","Yes","No")=="Yes")
 		explode()
-
+//----------------------------------------------------------------------
 /mob/living/bot/gutsy/updatehealth()
 	if(status_flags & GODMODE)
 		health = maxHealth
@@ -30,7 +43,7 @@
 	toxloss = 0
 	cloneloss = 0
 	halloss = 0
-
+//----------------------------------------------------------------------
 /mob/living/bot/gutsy/death()
 	explode()
 //----------------------------------------------------------------------

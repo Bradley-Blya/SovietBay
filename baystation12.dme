@@ -2012,6 +2012,6 @@
 #include "parabellum_corp\gutsy\gutsy_fuel.dm"
 #include "parabellum_corp\gutsy\gutsy_IO.dm"
 #include "parabellum_corp\gutsy\gutsy_life.dm"
-#include "parabellum_corp\gutsy\gutsy_turn.dm"
+#include "parabellum_corp\gutsy\gutsy_turning.dm"
 #include "parabellum_corp\gutsy\gutsy_update_icons.dm"
 // END_INCLUDE
