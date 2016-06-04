@@ -15,7 +15,7 @@
 	fuel-=fuelPortion
 	if(target != null)
 		path = AStar(loc, get_turf(target), /turf/proc/CardinalTurfsWithAccess, /turf/proc/Distance, 0, 30, id = botcard)
-		//step_to(src, path[1])
+		step_to(src, path[1])
 		path -= path[1]
 		if(!path.len && (get_dist(src, target) > 1))
 			world << "TEST2"
@@ -25,6 +25,8 @@
 	if(path.len)
 		step_to(src, path[1])
 		path -= path[1]
+	if(kamikaze && (get_dist(src, target) < 2))
+		explode()
 	return null
 //----------------------------------------------------------------------
 /mob/living/bot/gutsy/self_destruct()
