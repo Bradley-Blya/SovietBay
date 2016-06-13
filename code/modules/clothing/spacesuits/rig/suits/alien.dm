@@ -5,14 +5,15 @@
 	icon_state = "breacher_rig_cheap"
 	armor = list(melee = 60, bullet = 60, laser = 60, energy = 60, bomb = 70, bio = 100, rad = 50)
 	emp_protection = -20
-	slowdown = 6
+	online_slowdown = 6
 	offline_slowdown = 10
 	vision_restriction = 1
 	offline_vision_restriction = 2
 
-	chest_type = /obj/item/clothing/suit/space/rig
+	chest_type = /obj/item/clothing/suit/space/rig/unathi
 	helm_type = /obj/item/clothing/head/helmet/space/rig/unathi
 	boot_type = /obj/item/clothing/shoes/magboots/rig/unathi
+	glove_type = /obj/item/clothing/gloves/rig/unathi
 
 /obj/item/weapon/rig/unathi/fancy
 	name = "breacher chassis control module"
@@ -24,11 +25,16 @@
 
 /obj/item/clothing/head/helmet/space/rig/unathi
 	species_restricted = list("Unathi")
+	force = 5
+	sharp = 1 //poking people with the horn
 
 /obj/item/clothing/suit/space/rig/unathi
 	species_restricted = list("Unathi")
 
 /obj/item/clothing/shoes/magboots/rig/unathi
+	species_restricted = list("Unathi")
+
+/obj/item/clothing/gloves/rig/unathi
 	species_restricted = list("Unathi")
 
 /obj/item/weapon/rig/resomi
@@ -38,7 +44,7 @@
 	icon_state = "resomi_rig"
 	item_state = "resomi_rig"
 	armor = list(melee = 40, bullet = 5, laser = 20, energy = 5, bomb = 35, bio = 100, rad = 20) //default
-	slowdown = 4
+	online_slowdown = 4
 	offline_slowdown = 6
 
 	chest_type = /obj/item/clothing/suit/space/rig/resomi
@@ -51,7 +57,7 @@
 	desc = "An authentic Resomi combat rig. Small, spectacular and extrimely quick."
 	suit_type = "resomi hardsuit"
 	armor = list(melee = 60, bullet = 50, laser = 40, energy = 20, bomb = 50, bio = 100, rad = 100)
-	slowdown = 0
+	online_slowdown = 0
 	offline_slowdown = 1
 
 /obj/item/clothing/suit/space/rig/resomi

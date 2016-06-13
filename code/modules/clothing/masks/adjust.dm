@@ -1,4 +1,5 @@
 /obj/item/clothing/mask/adjust
+	icon = 'icons/obj/clothing/masks_c.dmi'
 	w_class = 2
 	siemens_coefficient = 0.9
 	body_parts_covered = FACE
