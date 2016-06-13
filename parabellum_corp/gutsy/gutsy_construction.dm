@@ -8,7 +8,7 @@
 	user << "You add the signaler to the helmet."
 	user.drop_from_inventory(src)
 	qdel(src)
-	return
+	return null
 //----------------------------------------------------------------------
 /obj/item/weapon/gutsy_assembly
 	name = "helmet/signaler assembly"
