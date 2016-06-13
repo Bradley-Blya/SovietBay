@@ -48,7 +48,7 @@ var/global/list/sparring_attack_cache = list()
 
 	var/stun_chance = rand(0, 100)
 
-	if(attack_damage >= 5 && armour < 2 && !(target == user) && stun_chance <= attack_damage * 5) // 25% standard chance
+	if(attack_damage >= 5 && armour < 100 && !(target == user) && stun_chance <= attack_damage * 5) // 25% standard chance
 		switch(zone) // strong punches can have effects depending on where they hit
 			if("head", "mouth", "eyes")
 				// Induce blurriness
@@ -83,7 +83,7 @@ var/global/list/sparring_attack_cache = list()
 				if(!target.lying)
 					target.visible_message("<span class='warning'>[target] gives way slightly.</span>")
 					target.apply_effect(attack_damage*3, AGONY, armour)
-	else if(attack_damage >= 5 && !(target == user) && (stun_chance + attack_damage * 5 >= 100) && armour < 2) // Chance to get the usual throwdown as well (25% standard chance)
+	else if(attack_damage >= 5 && !(target == user) && (stun_chance + attack_damage * 5 >= 100) && armour < 100) // Chance to get the usual throwdown as well (25% standard chance)
 		if(!target.lying)
 			target.visible_message("<span class='danger'>[target] [pick("slumps", "falls", "drops")] down to the ground!</span>")
 		else
@@ -112,10 +112,13 @@ var/global/list/sparring_attack_cache = list()
 
 /datum/unarmed_attack/bite/is_usable(var/mob/living/carbon/human/user, var/mob/living/carbon/human/target, var/zone)
 
-	if (user.wear_mask && istype(user.wear_mask, /obj/item/clothing/mask/muzzle))
+	if(istype(user.wear_mask, /obj/item/clothing/mask/muzzle))
 		return 0
+	for(var/obj/item/clothing/C in list(user.wear_mask, user.head, user.wear_suit))
+		if(C && (C.body_parts_covered & FACE) && (C.item_flags & THICKMATERIAL))
+			return 0 //prevent biting through a space helmet or similar
 	if (user == target && (zone == "head" || zone == "eyes" || zone == "mouth"))
-		return 0
+		return 0 //how do you bite yourself in the head?
 	return 1
 
 /datum/unarmed_attack/punch

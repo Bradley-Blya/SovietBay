@@ -240,6 +240,18 @@ You can set verify to TRUE if you want send() to sleep until the client has the 
 				if(fexists(path + filename))
 					register_asset(filename, fcopy_rsc(path + filename))
 
+	var/list/mapnames = list()
+	for(var/z in using_map.map_levels)
+		mapnames += map_image_file_name(z)
+
+	var/list/filenames = flist(MAP_IMAGE_PATH)
+	for(var/filename in filenames)
+		if(copytext(filename, length(filename)) != "/") // Ignore directories.
+			var/file_path = MAP_IMAGE_PATH + filename
+			if((filename in mapnames) && fexists(file_path))
+				common[filename] = fcopy_rsc(file_path)
+				register_asset(filename, common[filename])
+
 /datum/asset/nanoui/send(client, uncommon)
 	if(!islist(uncommon))
 		uncommon = list(uncommon)
@@ -280,7 +292,6 @@ var/global/list/legacy_common = list(
 "c_discharging.gif" = 'nano/images/c_discharging.gif',
 "c_max.gif" = 'nano/images/c_max.gif',
 "nanomapBackground.png" = 'nano/images/nanomapBackground.png',
-"nanomap_z1.png" = 'nano/images/nanomap_z1.png',
 "uiBackground-Syndicate.png" = 'nano/images/uiBackground-Syndicate.png',
 "uiBackground.png" = 'nano/images/uiBackground.png',
 "uiBasicBackground.png" = 'nano/images/uiBasicBackground.png',
@@ -330,7 +341,6 @@ var/global/list/legacy_uncommon = list(
 "c_discharging.gif" = 'nano/images/c_discharging.gif',
 "c_max.gif" = 'nano/images/c_max.gif',
 "nanomapBackground.png" = 'nano/images/nanomapBackground.png',
-"nanomap_z1.png" = 'nano/images/nanomap_z1.png',
 "uiBackground-Syndicate.png" = 'nano/images/uiBackground-Syndicate.png',
 "uiBackground.png" = 'nano/images/uiBackground.png',
 "uiBasicBackground.png" = 'nano/images/uiBasicBackground.png',

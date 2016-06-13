@@ -8,7 +8,8 @@
 	"White"        			= 'icons/mob/screen/white.dmi',
 	"White-noborder"		= 'icons/mob/screen/white-noborder.dmi',
 	"old"					= 'icons/mob/screen/old.dmi',
-	"old-noborder" 			= 'icons/mob/screen/old-noborder.dmi'
+	"old-noborder" 			= 'icons/mob/screen/old-noborder.dmi',
+	"minimalist"			= 'icons/mob/screen/minimalist.dmi'
 	)
 
 /proc/ui_style2icon(ui_style)
@@ -19,7 +20,7 @@
 
 /client/verb/change_ui()
 	set name = "Change UI"
-	set category = "Preferences"
+	set category = "OOC"
 	set desc = "Configure your user interface"
 
 	if(!ishuman(usr))

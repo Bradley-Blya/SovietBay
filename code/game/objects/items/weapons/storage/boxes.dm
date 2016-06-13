@@ -57,15 +57,15 @@
 
 /obj/item/weapon/storage/box/survival/
 	startswith = list(/obj/item/clothing/mask/breath = 1,
-					/obj/item/weapon/tank/emergency_oxygen = 1)
+					/obj/item/weapon/tank/emergency/oxygen = 1)
 
 /obj/item/weapon/storage/box/vox/
 	startswith = list(/obj/item/clothing/mask/breath = 1,
-					/obj/item/weapon/tank/emergency_nitrogen = 1)
+					/obj/item/weapon/tank/emergency/nitrogen = 1)
 
 /obj/item/weapon/storage/box/engineer/
 	startswith = list(/obj/item/clothing/mask/breath = 1,
-					/obj/item/weapon/tank/emergency_oxygen/engi = 1)
+					/obj/item/weapon/tank/emergency/oxygen/engi = 1)
 
 /obj/item/weapon/storage/box/gloves
 	name = "box of latex gloves"
@@ -146,7 +146,7 @@
 
 /obj/item/weapon/storage/box/flashbangs
 	name = "box of flashbangs"
-	desc = "A box containing 7 antipersonnel flashbang grenades.<br> WARNING: These devices are extremely dangerous and can cause blindness or deafness in repeated use."
+	desc = "A box containing 7 antipersonnel flashbang grenades.<br> WARNING: These devices are extremely dangerous and can cause blindness or deafness from repeated use."
 	icon_state = "flashbang"
 	startswith = list(/obj/item/weapon/grenade/flashbang = 7)
 
@@ -154,15 +154,25 @@
 	name = "box of pepperspray grenades"
 	desc = "A box containing 7 tear gas grenades. A gas mask is printed on the label.<br> WARNING: Exposure carries risk of serious injury or death. Keep away from persons with lung conditions."
 	icon_state = "flashbang"
-	startswith = list(/obj/item/weapon/grenade/chem_grenade/teargas = 6)
-
-
+	startswith = list(/obj/item/weapon/grenade/chem_grenade/teargas = 7)
 
 /obj/item/weapon/storage/box/emps
 	name = "box of emp grenades"
 	desc = "A box containing 5 military grade EMP grenades.<br> WARNING: Do not use near unshielded electronics or biomechanical augmentations, death or permanent paralysis may occur."
 	icon_state = "flashbang"
 	startswith = list(/obj/item/weapon/grenade/empgrenade = 5)
+
+/obj/item/weapon/storage/box/frags
+	name = "box of frag grenades"
+	desc = "A box containing 5 military grade fragmentation grenades.<br> WARNING: Live explosives. Misuse may result in serious injury or death."
+	icon_state = "flashbang"
+	startswith = list(/obj/item/weapon/grenade/frag = 5)
+
+/obj/item/weapon/storage/box/fragshells
+	name = "box of frag shells"
+	desc = "A box containing 5 military grade fragmentation shells.<br> WARNING: Live explosive munitions. Misuse may result in serious injury or death."
+	icon_state = "flashbang"
+	startswith = list(/obj/item/weapon/grenade/frag/shell = 5)
 
 /obj/item/weapon/storage/box/smokes
 	name = "box of smoke bombs"
@@ -200,11 +210,6 @@
 	desc = "This box contains nerd glasses."
 	icon_state = "glasses"
 	startswith = list(/obj/item/clothing/glasses/regular = 7)
-
-/obj/item/weapon/storage/box/drinkingglasses
-	name = "box of drinking glasses"
-	desc = "It has a picture of drinking glasses on it."
-	startswith = list(/obj/item/weapon/reagent_containers/food/drinks/drinkingglass = 6)
 
 /obj/item/weapon/storage/box/cdeathalarm_kit
 	name = "death alarm kit"
@@ -357,16 +362,39 @@
 	item_state = "medicalpack"
 	foldable = null
 	max_w_class = 3
-	w_class = 4
+	w_class = 5
 	can_hold = list(/obj/item/organ, /obj/item/weapon/reagent_containers/food, /obj/item/weapon/reagent_containers/glass)
 	max_storage_space = DEFAULT_BACKPACK_STORAGE
 	use_to_pickup = 1 // for picking up broken bulbs, not that most people will try
 
 /obj/item/weapon/storage/box/checkers
 	name = "checkers box"
-	desc = "this box holds a nifty portion of checkers."
+	desc = "This box holds a nifty portion of checkers. Foam-shaped on the inside so that only checkers may fit."
 	icon_state = "checkers"
 	max_storage_space = 24
+	foldable = null
 	can_hold = list(/obj/item/weapon/reagent_containers/food/snacks/checker)
 	startswith = list(/obj/item/weapon/reagent_containers/food/snacks/checker = 12,
 					/obj/item/weapon/reagent_containers/food/snacks/checker/red = 12)
+
+/obj/item/weapon/storage/box/checkers/chess
+	name = "black chess box"
+	desc = "This box holds all the pieces needed for the black side of the chess board."
+	icon_state = "chess_b"
+	startswith = list(/obj/item/weapon/reagent_containers/food/snacks/checker/pawn = 8,
+				/obj/item/weapon/reagent_containers/food/snacks/checker/knight = 2,
+				/obj/item/weapon/reagent_containers/food/snacks/checker/bishop = 2,
+				/obj/item/weapon/reagent_containers/food/snacks/checker/rook = 2,
+				/obj/item/weapon/reagent_containers/food/snacks/checker/queen = 1,
+				/obj/item/weapon/reagent_containers/food/snacks/checker/king = 1)
+
+/obj/item/weapon/storage/box/checkers/chess/red
+	name = "red chess box"
+	desc = "This box holds all the pieces needed for the red side of the chess board."
+	icon_state = "chess_r"
+	startswith = list(/obj/item/weapon/reagent_containers/food/snacks/checker/pawn/red = 8,
+				/obj/item/weapon/reagent_containers/food/snacks/checker/knight/red = 2,
+				/obj/item/weapon/reagent_containers/food/snacks/checker/bishop/red = 2,
+				/obj/item/weapon/reagent_containers/food/snacks/checker/rook/red = 2,
+				/obj/item/weapon/reagent_containers/food/snacks/checker/queen/red = 1,
+				/obj/item/weapon/reagent_containers/food/snacks/checker/king/red = 1)

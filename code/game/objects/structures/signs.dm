@@ -120,12 +120,12 @@
 
 /obj/structure/sign/chemistry
 	name = "\improper CHEMISTRY"
-	desc = "A warning sign which reads 'CHEMISTRY'."
+	desc = "A sign labelling an area containing chemical equipment."
 	icon_state = "chemistry1"
 
 /obj/structure/sign/chemistry2
 	name = "\improper CHEMISTRY"
-	desc = "A warning sign which reads 'CHEMISTRY'."
+	desc = "A sign labelling an area containing chemical equipment."
 	icon_state = "chemistry2"
 
 /obj/structure/sign/corrosives
@@ -153,6 +153,11 @@
 	desc = "A direction sign, claiming to know the way."
 	icon_state = "direction"
 
+/obj/structure/sign/directions/bridge
+	name = "\improper Bridge"
+	desc = "A direction sign, pointing out which way the Bridge is."
+	icon_state = "direction_bridge"
+
 /obj/structure/sign/directions/engineering
 	name = "\improper Engineering department"
 	desc = "A direction sign, pointing out which way the Engineering department is."
@@ -162,6 +167,11 @@
 	name = "\improper Escape Arm"
 	desc = "A direction sign, pointing out which way the escape shuttle dock is."
 	icon_state = "direction_evac"
+
+/obj/structure/sign/directions/infirmary
+	name = "\improper Infirmary"
+	desc = "A direction sign, pointing out which way the Infirmary is."
+	icon_state = "direction_infirm"
 
 /obj/structure/sign/directions/medical
 	name = "\improper Medical Bay"
@@ -210,18 +220,23 @@
 
 /obj/structure/sign/botany
 	name = "\improper HYDROPONICS"
-	desc = "A warning sign which reads 'HYDROPONICS'."
+	desc = "A sign labelling an area as a place where plants are grown."
 	icon_state = "hydro1"
 
 /obj/structure/sign/botany2
-	name = "\improper HYDROPONICS"
-	desc = "A warning sign which reads 'HYDROPONICS'."
+	name = "\improper BOTANY"
+	desc = "A warning sign which reads 'BOTANY!'."
 	icon_state = "hydro2"
 
 /obj/structure/sign/botany3
-	name = "\improper HYDROPONICS"
-	desc = "A warning sign which reads 'HYDROPONICS'."
+	name = "\improper HYDROPONICS STORAGE"
+	desc = "A sign labelling an area as a place where plant growing supplies are kept."
 	icon_state = "hydro3"
+
+/obj/structure/sign/botany4
+	name = "\improper XENOFLORA"
+	desc = "A sign labelling an area as a place where xenobiological plants are researched."
+	icon_state = "hydro4"
 
 /obj/structure/sign/laserhazard
 	name = "LASER HAZARD"
@@ -278,10 +293,33 @@
 	desc = "This plaque commemorates the fall of the Atmos FEA division. For all the charred, dizzy, and brittle men who have died in its hands."
 	icon_state = "plaque_atmos"
 
+/obj/structure/sign/engiplaque
+	name = "\improper engineering memorial plaque"
+	desc = "This plaque memorializes those engineers and technicians who made the ultimate sacrifice to save their vessel and its crew."
+	icon_state = "plaque_atmos"
+
+/obj/structure/sign/bluecross_1
+	name = "infirmary"
+	desc = "The Intergalactic symbol of Medical institutions. You'll probably get help here."
+	icon_state = "bluecross"
+
+/obj/structure/sign/bluecross_2
+	name = "infirmary"
+	desc = "The Intergalactic symbol of Medical institutions. You'll probably get help here."
+	icon_state = "bluecross2"
+
 /obj/structure/sign/goldenplaque
 	name = "\improper The Most Robust Men Award for Robustness"
 	desc = "To be Robust is not an action or a way of life, but a mental state. Only those with the force of Will strong enough to act during a crisis, saving friend from foe, are truly Robust. Stay Robust my friends."
 	icon_state = "plaque_golden"
+
+/obj/structure/sign/goldenplaque/security
+	name = "motivational plaque"
+	desc = "A plaque engraved with a generic motivational quote and picture. ' Greater love hath no man than this, that a man lay down his life for his friends. John 15:13 "
+
+/obj/structure/sign/goldenplaque/medical
+	name = "medical certificate"
+	desc = "A picture next to a long winded description of medical certifications and degrees."
 
 /obj/structure/sign/kiddieplaque
 	name = "\improper AI developers plaque"
@@ -292,6 +330,26 @@
 	name = "\improper ESCAPE PODS"
 	desc = "A warning sign which reads 'ESCAPE PODS'."
 	icon_state = "pods"
+
+/obj/structure/sign/floorplaque
+	name = "\improper commemorative plaque"
+	desc = "A list of dead explorers who gave their lives in search of the next great discovery. Hope you don't join them."
+	icon_state = "floorplaque"
+
+/obj/structure/sign/double/solgovflag
+	name = "Sol Central Government Flag"
+	desc = "The flag of the Sol Central Government, a symbol of many things to many people."
+
+/obj/structure/sign/double/solgovflag/left
+	icon_state = "solgovflag-left"
+
+/obj/structure/sign/double/solgovflag/right
+	icon_state = "solgovflag-right"
+
+/obj/structure/sign/dedicationplaque
+	name = "\improper SEV Torch dedication plaque"
+	desc = "S.E.V. Torch - Mako Class - Sol Expeditionary Corps Registry 95519 - Shiva Fleet Yards, Mars - First Vessel To Bear The Name - Launched 2560 - Sol Central Government - 'Never was anything great achieved without danger.'"
+	icon_state = "lightplaque"
 
 /obj/structure/sign/radiation
 	name = "\improper RADIOACTIVE AREA"
@@ -305,12 +363,12 @@
 
 /obj/structure/sign/science
 	name = "\improper SCIENCE!"
-	desc = "A warning sign which reads 'SCIENCE!'."
+	desc = "A sign labelling the research wing."
 	icon_state = "science1"
 
 /obj/structure/sign/science2
-	name = "\improper SCIENCE!"
-	desc = "A warning sign which reads 'SCIENCE!'."
+	name = "\improper RESEARCH WING"
+	desc = "A sign labelling an area where research is performed."
 	icon_state = "science2"
 
 /obj/structure/sign/securearea
@@ -335,22 +393,22 @@
 
 /obj/structure/sign/xenobio
 	name = "\improper XENOBIOLOGY"
-	desc = "A warning sign which reads 'XENOBIOLOGY'."
+	desc = "A sign labelling an area as a place where xenobiological entites are researched."
 	icon_state = "xenobio1"
 
 /obj/structure/sign/xenobio2
 	name = "\improper XENOBIOLOGY"
-	desc = "A warning sign which reads 'XENOBIOLOGY'."
+	desc = "A sign labelling an area as a place where xenobiological entites are researched."
 	icon_state = "xenobio2"
 
 /obj/structure/sign/xenobio3
 	name = "\improper XENOBIOLOGY"
-	desc = "A warning sign which reads 'XENOBIOLOGY'."
+	desc = "A sign labelling an area as a place where xenobiological entites are researched."
 	icon_state = "xenobio3"
 
 /obj/structure/sign/xenobio4
 	name = "\improper XENOBIOLOGY"
-	desc = "A warning sign which reads 'XENOBIOLOGY'."
+	desc = "A sign labelling an area as a place where xenobiological entites are researched."
 	icon_state = "xenobio4"
 
 /obj/structure/sign/redcross

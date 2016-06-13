@@ -111,7 +111,7 @@
 			setMoveCooldown(10) //getting something out of a backpack
 
 		if(W)
-			var/resolved = W.resolve_attackby(A, src)
+			var/resolved = W.resolve_attackby(A, src, params)
 			if(!resolved && A && W)
 				W.afterattack(A, src, 1, params) // 1 indicates adjacency
 		else
@@ -134,7 +134,7 @@
 
 			if(W)
 				// Return 1 in attackby() to prevent afterattack() effects (when safely moving items for example)
-				var/resolved = W.resolve_attackby(A,src)
+				var/resolved = W.resolve_attackby(A,src, params)
 				if(!resolved && A && W)
 					W.afterattack(A, src, 1, params) // 1: clicking something Adjacent
 			else
@@ -211,6 +211,7 @@
 				setMoveCooldown(10)
 			else
 				return
+		setClickCooldown(DEFAULT_ATTACK_COOLDOWN)
 		A.attack_tk(src)
 /*
 	Restrained ClickOn
@@ -304,7 +305,7 @@
 	return
 
 /mob/living/LaserEyes(atom/A)
-	setClickCooldown(4)
+	setClickCooldown(DEFAULT_QUICK_COOLDOWN)
 	var/turf/T = get_turf(src)
 
 	var/obj/item/projectile/beam/LE = new (T)
@@ -351,5 +352,6 @@
 		C.swap_hand()
 	else
 		var/turf/T = screen_loc2turf(modifiers["screen-loc"], get_turf(usr))
-		T.Click(location, control, params)
+		if(T)
+			T.Click(location, control, params)
 	return 1

@@ -10,6 +10,7 @@ LINEN BINS
 	icon = 'icons/obj/bedsheets.dmi'
 	icon_state = "sheetwhite"
 	item_state = "bedsheet"
+	randpixel = 0
 	slot_flags = SLOT_BACK
 	layer = 4.0
 	throwforce = 1
@@ -183,7 +184,7 @@ LINEN BINS
 		amount++
 		user << "<span class='notice'>You put [I] in [src].</span>"
 		update_icon()
-	else if(amount && !hidden && I.w_class < 4)	//make sure there's sheets to hide it among, make sure nothing else is hidden in there.
+	else if(amount && !hidden && I.w_class < BULKY_ITEM)	//make sure there's sheets to hide it among, make sure nothing else is hidden in there.
 		user.drop_item()
 		I.loc = src
 		hidden = I

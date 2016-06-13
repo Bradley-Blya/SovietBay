@@ -18,6 +18,7 @@ var/global/datum/global_init/init = new ()
 	generate_gameid()
 
 	makeDatumRefLists()
+	populateGlobalLists()
 	load_configuration()
 
 	initialize_chemical_reagents()
@@ -174,8 +175,9 @@ var/world_topic_spam_protect_time = world.timeofday
 
 		// This is dumb, but spacestation13.com's banners break if player count isn't the 8th field of the reply, so... this has to go here.
 		s["players"] = 0
-		s["stationtime"] = worldtime2text()
-		s["roundduration"] = round_duration_as_text()
+		s["stationtime"] = stationtime2text()
+		s["roundduration"] = roundduration2text()
+		s["map"] = using_map.full_name
 
 		if(input["status"] == "2")
 			var/list/players = list()
@@ -246,9 +248,9 @@ var/world_topic_spam_protect_time = world.timeofday
 
 	else if(T == "revision")
 		if(revdata.revision)
-			return list2params(list(branch = revdata.branch, date = revdata.date, revision = revdata.revision))
+			return list2params(list(branch = revdata.branch, date = revdata.date, revision = revdata.revision, gameid = game_id))
 		else
-			return "unknown"
+			return list2params(list(revision = "unknown", gameid = game_id))
 
 	else if(copytext(T,1,5) == "info")
 		var/input[] = params2list(T)
@@ -276,6 +278,10 @@ var/world_topic_spam_protect_time = world.timeofday
 			if(M.mind)
 				strings += M.mind.assigned_role
 				strings += M.mind.special_role
+			if(ishuman(M))
+				var/mob/living/carbon/human/H = M
+				if(H.species)
+					strings += H.species.name
 			for(var/text in strings)
 				if(ckey(text) in ckeysearch)
 					match[M] += 10 // an exact match is far better than a partial one
@@ -317,8 +323,14 @@ var/world_topic_spam_protect_time = world.timeofday
 							clone = L.getCloneLoss(),
 							brain = L.getBrainLoss()
 						))
+				if(ishuman(M))
+					var/mob/living/carbon/human/H = M
+					info["species"] = H.species.name
+				else
+					info["species"] = "non-human"
 			else
 				info["damage"] = "non-living"
+				info["species"] = "non-human"
 			info["gender"] = M.gender
 			return list2params(info)
 		else

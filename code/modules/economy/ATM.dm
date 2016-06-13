@@ -111,7 +111,7 @@ log transactions
 			T.amount = I:worth
 			T.source_terminal = machine_id
 			T.date = current_date_string
-			T.time = worldtime2text()
+			T.time = stationtime2text()
 			authenticated_account.transaction_log.Add(T)
 
 			user << "<span class='info'>You insert [I] into [src].</span>"
@@ -176,13 +176,13 @@ log transactions
 								dat += "<td>[T.time]</td>"
 								dat += "<td>[T.target_name]</td>"
 								dat += "<td>[T.purpose]</td>"
-								dat += "<td>$[T.amount]</td>"
+								dat += "<td>þ[T.amount]</td>"
 								dat += "<td>[T.source_terminal]</td>"
 								dat += "</tr>"
 							dat += "</table>"
 							dat += "<A href='?src=\ref[src];choice=print_transaction'>Print</a><br>"
 						if(TRANSFER_FUNDS)
-							dat += "<b>Account balance:</b> $[authenticated_account.money]<br>"
+							dat += "<b>Account balance:</b> þ[authenticated_account.money]<br>"
 							dat += "<A href='?src=\ref[src];choice=view_screen;view_screen=0'>Back</a><br><br>"
 							dat += "<form name='transfer' action='?src=\ref[src]' method='get'>"
 							dat += "<input type='hidden' name='src' value='\ref[src]'>"
@@ -194,7 +194,7 @@ log transactions
 							dat += "</form>"
 						else
 							dat += "Welcome, <b>[authenticated_account.owner_name].</b><br/>"
-							dat += "<b>Account balance:</b> $[authenticated_account.money]"
+							dat += "<b>Account balance:</b> þ[authenticated_account.money]"
 							dat += "<form name='withdrawal' action='?src=\ref[src]' method='get'>"
 							dat += "<input type='hidden' name='src' value='\ref[src]'>"
 							dat += "<input type='radio' name='choice' value='withdrawal' checked> Cash  <input type='radio' name='choice' value='e_withdrawal'> Chargecard<br>"
@@ -240,7 +240,7 @@ log transactions
 							T.purpose = transfer_purpose
 							T.source_terminal = machine_id
 							T.date = current_date_string
-							T.time = worldtime2text()
+							T.time = stationtime2text()
 							T.amount = "([transfer_amount])"
 							authenticated_account.transaction_log.Add(T)
 						else
@@ -282,7 +282,7 @@ log transactions
 									T.purpose = "Unauthorised login attempt"
 									T.source_terminal = machine_id
 									T.date = current_date_string
-									T.time = worldtime2text()
+									T.time = stationtime2text()
 									failed_account.transaction_log.Add(T)
 							else
 								usr << "\red \icon[src] Incorrect pin/account combination entered, [max_pin_attempts - number_incorrect_tries] attempts remaining."
@@ -302,7 +302,7 @@ log transactions
 						T.purpose = "Remote terminal access"
 						T.source_terminal = machine_id
 						T.date = current_date_string
-						T.time = worldtime2text()
+						T.time = stationtime2text()
 						authenticated_account.transaction_log.Add(T)
 
 						usr << "\blue \icon[src] Access granted. Welcome user '[authenticated_account.owner_name].'"
@@ -330,7 +330,7 @@ log transactions
 						T.amount = "([amount])"
 						T.source_terminal = machine_id
 						T.date = current_date_string
-						T.time = worldtime2text()
+						T.time = stationtime2text()
 						authenticated_account.transaction_log.Add(T)
 					else
 						usr << "\icon[src]<span class='warning'>You don't have enough funds to do that!</span>"
@@ -355,7 +355,7 @@ log transactions
 						T.amount = "([amount])"
 						T.source_terminal = machine_id
 						T.date = current_date_string
-						T.time = worldtime2text()
+						T.time = stationtime2text()
 						authenticated_account.transaction_log.Add(T)
 					else
 						usr << "\icon[src]<span class='warning'>You don't have enough funds to do that!</span>"
@@ -366,8 +366,8 @@ log transactions
 					R.info = "<b>NT Automated Teller Account Statement</b><br><br>"
 					R.info += "<i>Account holder:</i> [authenticated_account.owner_name]<br>"
 					R.info += "<i>Account number:</i> [authenticated_account.account_number]<br>"
-					R.info += "<i>Balance:</i> $[authenticated_account.money]<br>"
-					R.info += "<i>Date and time:</i> [worldtime2text()], [current_date_string]<br><br>"
+					R.info += "<i>Balance:</i> þ[authenticated_account.money]<br>"
+					R.info += "<i>Date and time:</i> [stationtime2text()], [current_date_string]<br><br>"
 					R.info += "<i>Service terminal ID:</i> [machine_id]<br>"
 
 					//stamp the paper
@@ -390,7 +390,7 @@ log transactions
 					R.info = "<b>Transaction logs</b><br>"
 					R.info += "<i>Account holder:</i> [authenticated_account.owner_name]<br>"
 					R.info += "<i>Account number:</i> [authenticated_account.account_number]<br>"
-					R.info += "<i>Date and time:</i> [worldtime2text()], [current_date_string]<br><br>"
+					R.info += "<i>Date and time:</i> [stationtime2text()], [current_date_string]<br><br>"
 					R.info += "<i>Service terminal ID:</i> [machine_id]<br>"
 					R.info += "<table border=1 style='width:100%'>"
 					R.info += "<tr>"
@@ -407,7 +407,7 @@ log transactions
 						R.info += "<td>[T.time]</td>"
 						R.info += "<td>[T.target_name]</td>"
 						R.info += "<td>[T.purpose]</td>"
-						R.info += "<td>$[T.amount]</td>"
+						R.info += "<td>þ[T.amount]</td>"
 						R.info += "<td>[T.source_terminal]</td>"
 						R.info += "</tr>"
 					R.info += "</table>"
@@ -466,7 +466,7 @@ log transactions
 					T.purpose = "Remote terminal access"
 					T.source_terminal = machine_id
 					T.date = current_date_string
-					T.time = worldtime2text()
+					T.time = stationtime2text()
 					authenticated_account.transaction_log.Add(T)
 
 					view_screen = NO_SCREEN
