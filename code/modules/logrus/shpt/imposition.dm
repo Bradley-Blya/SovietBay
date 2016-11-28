@@ -9,29 +9,34 @@
 	if(cost)
 		mana -= cost
 		loc = target
+		Destroy()
 
 /obj/logrus/effect/targeted/shpt/imposition/cost()
+	var/cost
 	var/td = get_dist(src, target)
 	switch(td)
 		if(2 to 10)
-			return 1.5*td
+			cost = 1.5*td
 		if(11 to 30)
-			return (1.3*(td+1))
+			cost = (1.3*(td+1))
 		if(31 to 127)
-			return (1.3*(td+25) - 1.03*td)
+			cost = (1.3*(td+25) - 1.03*td)
+	if(mana < cost) return 0
+	if(mana >= cost) return cost
 
 /obj/logrus/effect/targeted/shpt/imposition/Destroy()
 	auxilary.Destroy()
+	IncreaseMana(constraint)
 	var/portion = constraint/contents.len
 	for(var/obj/logrus/effect/E in contents)
-		if(istype(E, /obj/logrus/effect/auxilary))
+		if(istype(E, /obj/logrus/effect/auxilary))//not sure why it's auxilary here
 			E.loc = loc
-			E.trigger(portion)
+			Transfer(src, E, portion)
 	del src
 
 
-/obj/logrus/effect/targeted/shpt/imposition/setting(mob/M, text, option)
-	if(subeffects_words.Find(text))
+/obj/logrus/effect/targeted/shpt/imposition/setting(mob/M, n, option)
+	if(text in main)
 		switch(text)
 			if("part")	return "part"
 	if(magnitude_mod.Find(text))

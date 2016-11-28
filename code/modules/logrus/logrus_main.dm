@@ -8,42 +8,33 @@
 
 	var/school = "evocation"
 
-	var/overlay = 0		//should be a separate effect object
-	var/overlay_icon = 'icons/obj/wizard.dmi'
-	var/overlay_icon_state = "spell"
-	var/overlay_lifespan = 0
-
-	var/centcomm_cancast = 1 //Whether or not the spell should be allowed on z2
+	var/centcomm_cancast = 1 	//Whether or not the spell should be allowed on z2
 	var/vocation = "HURP DURP"
 
-	var/mana				//So any spell can be charged with mana
-	var/mob/caster			//Like admin access to the spell
-	var/obj/logrus/source				//Where the spell takes power
+	var/active
+	var/mana					//So any spell can be charged with mana
+	var/mob/caster				//Like admin access to the spell
+	var/obj/logrus/effect/source	//Where the spell takes power ftom (should be remade)
+	var/datum/logrus/ticker		//a ref to the magic ticker
 
 /obj/logrus/Click()
     return
 
-/obj/logrus/New()
-	..()
-	caster = loc
-	source = loc
-	spawn(0)
-		mana()
-
-/obj/logrus/Destroy()//yep, i need this
+/obj/logrus/Destroy()//yep, i need this     I don't remember, why, though
 	del src
 
 /obj/logrus/effect
-	var/focus			//how user affects the waste of the spell
-	var/detoration		//how much mana passed through the spell
-	var/waste			//how much mana is wasted by the spell
-	var/constraint		//how much mana costs the spells vocation,
-	var/obj/logrus/effect/auxilary/auxilary		//an auxilary spell one per effect
+	var/focus					//how user affects the waste of the spell
+	var/detoration				//how much mana have passed through the spell since it was created
+	var/waste					//how much mana is wasted by the spell
+	var/constraint = 1			//how much mana costs the spells vocation
+	var/mode					//customisation purposes
+	var/obj/logrus/effect/auxilary/auxilary		//an auxilary spell, one per effect
 
 /obj/logrus/effect/proc/perform()
-	conversion()					//this calculates how much mana is wasted due to imperfection of the spell, or if it's going to work at all
-	cast()						//this is the actual spell in acion
-	trigger()						//here spell handles spells inside of it
+	conversion()			//this wastes some mana due to imperfection of the spell
+	if(!cost())					//used to determine, if the spell has enough power to do it's job: mostly for auxilary
+		cast()					//this is the actual spell in action
 
 /obj/logrus/effect/proc/conversion()
 	var/loss1 = mana*(1-(100+((-0.5)*(detoration)))/100)
@@ -54,25 +45,67 @@
 //	mana = round(mana, 1)
 
 /obj/logrus/effect/proc/cast()
-	return
 
 /obj/logrus/effect/proc/cost()
-	return
-
-/obj/logrus/effect/proc/trigger()
-	return
 
 /obj/logrus/effect/proc/setting(mob/M as mob, text)
-	return
+
+/obj/logrus/effect/proc/set_target(atom/A)
+
+/obj/logrus/effect/proc/Add_Aux(var/obj/logrus/effect/auxilary/S)
+	if(auxilary)
+		auxilary.Add_Aux(S)
+	auxilary = S
+	S.holder = src
+	S.loc = src
 
 /obj/logrus/effect/Del()
 	for(var/obj/logrus/effect/S in contents)
 		S.loc = loc
 
 
+/obj/logrus/proc/point(mob/M, atom/A)
+	return
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/obj/logrus/effect/auxilary
+	var/obj/logrus/effect/holder
+	var/portion
+	var/powered
+	var/cost
+
+	New()
+		..()
+		if(isspell(loc))
+			holder = loc
+			holder.auxilary = src
+		else
+			del src
+
+	Destroy()
+		if(auxilary)
+			Destroy(auxilary)
+
+
+/obj/logrus/effect/auxilary/perform(var/ticks)
+	if(ticks%10)  //if there's a remainder = if it doesn't divide into ten (yeah, my memory is like that)
+		return
+	..()
+
+/obj/logrus/effect/auxilary/conversion(var/portion)
+	cost()
+	..()
+
+/obj/logrus/effect/auxilary/set_target(atom/A)
+	holder.set_target(A)
+
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /obj/logrus/effect/targeted
 	var/target
+
+/obj/logrus/effect/targeted/set_target(atom/A)
+	target = A
 
 
 /obj/logrus/effect/targeted/shpt

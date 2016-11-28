@@ -216,6 +216,9 @@
 		if(P)
 			qdel(P)	// qdel
 
+	spawn(0)
+		for(var/obj/logrus/S in view())
+			S.point(src, A)
 	face_atom(A)
 	return 1
 
@@ -267,7 +270,7 @@
 			W.attack_self(src)
 			update_inv_l_hand()
 		else
-			src.pick_sprout()
+			src.logrus_action()
 	else
 		var/obj/item/W = r_hand
 		if (W)

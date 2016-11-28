@@ -12,6 +12,12 @@
 	var/canmove = 1
 	var/mob/caster
 
+/obj/item/logrus/pointer
+	icon_state = "pointer"
+
+/obj/item/logrus/pointer/rein
+	icon_state = "rein"
+
 /obj/item/logrus/rein
 	icon_state = "rein"
 	var/obj/item/logrus/probe/probe
@@ -44,10 +50,13 @@
 
 
 /*obj/item/logrus/probe/ClickOn()
-	return*/
-/mob/proc/pick_sprout()
+	return
+	*/
+/mob/proc/logrus_action()
+	var/obj/logrus/spellcraft/logrus = get_logrus()//this will be needed when staff mages introduced
+	if(1 == logrus_check())
+		logrus.pick_pointer()
 	if(2 == logrus_check())
-		var/obj/logrus/spellcraft/logrus = get_logrus()//this will be needed when staff mages introduced
 		logrus.pick_sprout()
 
 
@@ -68,7 +77,8 @@
 
 
 /*obj/item/logrus/rein/equipped(var/mob/user, var/slot)
-		del(src)*/
+		del(src)
+		*/
 
 /obj/item/logrus/probe/proc/logrus_attack(var/atom/A)
 	if(isturf(A) || isturf(A.loc))
@@ -109,7 +119,8 @@
 		loc = A
 	else if(isturf(A.loc))
 		loc = A.loc
-	else return*/
+	else return
+	*/
 
 
 
@@ -129,7 +140,8 @@
 			return
 		if(modifiers["ctrl"])
 			CtrlClickOn(A)
-			return*/
+			return
+*/
 
 	logrus_attack(A)
 
