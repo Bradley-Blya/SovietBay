@@ -5,7 +5,7 @@
 	maxHealth = 50
 	health = 50
 	req_one_access = list(access_security, access_forensics_lockers)
-	botcard_access = list(access_security, access_sec_doors, access_forensics_lockers, access_morgue, access_maint_tunnels, access_court)
+	botcard_access = list(access_security, access_sec_doors, access_forensics_lockers, access_morgue, access_maint_tunnels)
 
 	var/mob/target
 
@@ -70,6 +70,11 @@
 	else
 		icon_state = "secbot[on]"
 
+	if(on)
+		set_light(2, 1, "#FF6A00")
+	else
+		set_light(0)
+
 /mob/living/bot/secbot/attack_hand(var/mob/user)
 	user.set_machine(src)
 	var/dat
@@ -77,13 +82,15 @@
 	dat += "Status: <A href='?src=\ref[src];power=1'>[on ? "On" : "Off"]</A><BR>"
 	dat += "Behaviour controls are [locked ? "locked" : "unlocked"]<BR>"
 	dat += "Maintenance panel is [open ? "opened" : "closed"]"
-	if(!locked || issilicon(user))
+	if(!locked || issilicon(usr) || usr == src)
 		dat += "<BR>Check for Weapon Authorization: <A href='?src=\ref[src];operation=idcheck'>[idcheck ? "Yes" : "No"]</A><BR>"
 		dat += "Check Security Records: <A href='?src=\ref[src];operation=ignorerec'>[check_records ? "Yes" : "No"]</A><BR>"
 		dat += "Check Arrest Status: <A href='?src=\ref[src];operation=ignorearr'>[check_arrest ? "Yes" : "No"]</A><BR>"
 		dat += "Operating Mode: <A href='?src=\ref[src];operation=switchmode'>[arrest_type ? "Detain" : "Arrest"]</A><BR>"
 		dat += "Report Arrests: <A href='?src=\ref[src];operation=declarearrests'>[declare_arrests ? "Yes" : "No"]</A><BR>"
-		dat += "Auto Patrol: <A href='?src=\ref[src];operation=patrol'>[auto_patrol ? "On" : "Off"]</A>"
+		dat += "Auto Patrol: <A href='?src=\ref[src];operation=patrol'>[auto_patrol ? "On" : "Off"]</A><BR>"
+	if(istype(user, /mob/living/silicon/ai))
+		dat += "<BR><A href='?src=\ref[src];operation=ai_assume'>Assume AI control</A>"
 	user << browse("<HEAD><TITLE>Securitron v[bot_version] controls</TITLE></HEAD>[dat]", "window=autosec")
 	onclose(user, "autosec")
 	return
@@ -116,6 +123,10 @@
 			mode = SECBOT_IDLE
 		if("declarearrests")
 			declare_arrests = !declare_arrests
+		if("ai_assume")
+			if(istype(usr, /mob/living/silicon/ai))
+				var/mob/living/silicon/ai/AI = usr
+				assume_ai(AI)
 	attack_hand(usr)
 
 /mob/living/bot/secbot/attackby(var/obj/item/O, var/mob/user)
@@ -263,7 +274,7 @@
 		if(!C.lying || C.handcuffed || arrest_type)
 			cuff = 0
 		if(!cuff)
-			C.stun_effect_act(0, 60, null)
+			C.stun_effect_act(10, 30, null)
 			playsound(loc, 'sound/weapons/Egloves.ogg', 50, 1, -1)
 			do_attack_animation(C)
 			is_attacking = 1

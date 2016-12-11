@@ -1,3 +1,6 @@
+/mob/living/carbon/alien/instantiate_hud(var/datum/hud/HUD)
+	HUD.larva_hud()
+
 /datum/hud/proc/larva_hud()
 
 	src.adding = list()
@@ -11,7 +14,7 @@
 	using.icon = 'icons/mob/screen1_alien.dmi'
 	using.icon_state = (mymob.m_intent == "run" ? "running" : "walking")
 	using.screen_loc = ui_acti
-	using.layer = 20
+	using.layer = SCREEN_LAYER
 	src.adding += using
 	move_intent = using
 
@@ -32,7 +35,7 @@
 	mymob.flash.icon = 'icons/mob/screen1_alien.dmi'
 	mymob.flash.icon_state = "blank"
 	mymob.flash.name = "flash"
-	mymob.flash.screen_loc = "1,1 to 15,15"
+	mymob.flash.screen_loc = ui_entire_screen
 	mymob.flash.layer = 17
 
 	mymob.fire = new /obj/screen()
@@ -41,6 +44,7 @@
 	mymob.fire.name = "fire"
 	mymob.fire.screen_loc = ui_fire
 
-	mymob.client.screen = null
+	mymob.client.screen = list()
 	mymob.client.screen += list( mymob.healths, mymob.blind, mymob.flash, mymob.fire) //, mymob.rest, mymob.sleep, mymob.mach )
 	mymob.client.screen += src.adding + src.other
+	common_hud()

@@ -14,17 +14,6 @@
 /mob/living/singularity_pull(S)
 	step_towards(src, S)
 
-/mob/living/carbon/human/singularity_act()
-	var/gain = 20
-	if(mind)
-		if((mind.assigned_role == "Station Engineer") || (mind.assigned_role == "Chief Engineer"))
-			gain = 100
-		if(mind.assigned_role == "Assistant")
-			gain = rand(0, 300)
-	investigate_log(I_SINGULO,"has been consumed by a singularity", I_SINGULO)
-	gib()
-	return gain
-
 /mob/living/carbon/human/singularity_pull(S, current_size)
 	if(current_size >= STAGE_THREE)
 		var/list/handlist = list(l_hand, r_hand)
@@ -32,9 +21,9 @@
 			if(prob(current_size*5) && hand.w_class >= ((11-current_size)/2) && u_equip(hand))
 				step_towards(hand, src)
 				src << "<span class = 'warning'>The [S] pulls \the [hand] from your grip!</span>"
-	apply_effect(current_size * 3, IRRADIATE)
+	apply_effect(current_size * 3, IRRADIATE, blocked = getarmor(null, "rad"))
 	if(shoes)
-		if(shoes.flags & NOSLIP) return 0
+		if(shoes.item_flags & NOSLIP) return 0
 	..()
 
 /obj/singularity_act()
@@ -45,12 +34,8 @@
 		return 2
 
 /obj/singularity_pull(S, current_size)
-	if(simulated)
-		if(anchored)
-			if(current_size >= STAGE_FIVE)
-				step_towards(src, S)
-		else
-			step_towards(src, S)
+	if(simulated && !anchored)
+		step_towards(src, S)
 
 /obj/effect/beam/singularity_pull()
 	return
@@ -59,15 +44,18 @@
 	return
 
 /obj/item/singularity_pull(S, current_size)
-	spawn(0) //this is needed or multiple items will be thrown sequentially and not simultaneously
-		if(current_size >= STAGE_FOUR)
-			//throw_at(S, 14, 3)
-			step_towards(src,S)
-			sleep(1)
-			step_towards(src,S)
-		else if(current_size > STAGE_ONE)
-			step_towards(src,S)
-		else ..()
+	set waitfor = 0
+	if(anchored)
+		return
+	sleep(0) //this is needed or multiple items will be thrown sequentially and not simultaneously
+	if(current_size >= STAGE_FOUR)
+		//throw_at(S, 14, 3)
+		step_towards(src,S)
+		sleep(1)
+		step_towards(src,S)
+	else if(current_size > STAGE_ONE)
+		step_towards(src,S)
+	else ..()
 
 /obj/machinery/atmospherics/pipe/singularity_pull()
 	return
@@ -101,29 +89,14 @@
 	return 1000
 
 /turf/singularity_act(S, current_size)
-	if(intact)
+	if(!is_plating())
 		for(var/obj/O in contents)
 			if(O.level != 1)
 				continue
 			if(O.invisibility == 101)
 				O.singularity_act(src, current_size)
-	ChangeTurf(/turf/space)
+	ChangeTurf(get_base_turf_by_area(src))
 	return 2
-
-/turf/simulated/wall/singularity_pull(S, current_size)
-
-	if(!reinf_material)
-		if(current_size >= STAGE_FIVE)
-			if(prob(75))
-				dismantle_wall()
-			return
-		if(current_size == STAGE_FOUR)
-			if(prob(30))
-				dismantle_wall()
-	else
-		if(current_size >= STAGE_FIVE)
-			if(prob(30))
-				dismantle_wall()
 
 /turf/space/singularity_act()
 	return
@@ -134,10 +107,7 @@
 /atom/proc/singuloCanEat()
 	return 1
 
-/mob/dead/singuloCanEat()
-	return 0
-
-/mob/eye/singuloCanEat()
+/mob/observer/singuloCanEat()
 	return 0
 
 /mob/new_player/singuloCanEat()

@@ -3,7 +3,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 /obj/item/weapon/reagent_containers/food/drinks
 	name = "drink"
-	desc = "yummy"
+	desc = "Yummy!"
 	icon = 'icons/obj/drinks.dmi'
 	icon_state = null
 	flags = OPENCONTAINER
@@ -14,9 +14,18 @@
 		return
 
 	attack_self(mob/user as mob)
-		return
+		if(!is_open_container())
+			open(user)
+
+	proc/open(mob/user)
+		playsound(loc,'sound/effects/canopen.ogg', rand(10,50), 1)
+		user << "<span class='notice'>You open [src] with an audible pop!</span>"
+		flags |= OPENCONTAINER
 
 	attack(mob/M as mob, mob/user as mob, def_zone)
+		if(force && !(flags & NOBLUDGEON) && user.a_intent == I_HURT)
+			return ..()
+
 		if(standard_feed_mob(user, M))
 			return
 
@@ -29,7 +38,24 @@
 			return
 		if(standard_pour_into(user, target))
 			return
+		return ..()
 
+	standard_feed_mob(var/mob/user, var/mob/target)
+		if(!is_open_container())
+			user << "<span class='notice'>You need to open [src]!</span>"
+			return 1
+		return ..()
+
+	standard_dispenser_refill(var/mob/user, var/obj/structure/reagent_dispensers/target)
+		if(!is_open_container())
+			user << "<span class='notice'>You need to open [src]!</span>"
+			return 1
+		return ..()
+
+	standard_pour_into(var/mob/user, var/atom/target)
+		if(!is_open_container())
+			user << "<span class='notice'>You need to open [src]!</span>"
+			return 1
 		return ..()
 
 	self_feed_message(var/mob/user)
@@ -58,21 +84,17 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 /obj/item/weapon/reagent_containers/food/drinks/golden_cup
-	desc = "A golden cup"
+	desc = "A golden cup."
 	name = "golden cup"
 	icon_state = "golden_cup"
 	item_state = "" //nope :(
-	w_class = 4
+	w_class = 5
 	force = 14
 	throwforce = 10
 	amount_per_transfer_from_this = 20
 	possible_transfer_amounts = null
 	volume = 150
 	flags = CONDUCT | OPENCONTAINER
-
-/obj/item/weapon/reagent_containers/food/drinks/golden_cup/tournament_26_06_2011
-	desc = "A golden cup. It will be presented to a winner of tournament 26 june and name of the winner will be graved on it."
-
 
 ///////////////////////////////////////////////Drinks
 //Notes by Darem: Drinks are simply containers that start preloaded. Unlike condiments, the contents can be ingested directly
@@ -187,7 +209,7 @@
 
 /obj/item/weapon/reagent_containers/food/drinks/flask
 	name = "Captain's Flask"
-	desc = "A metal flask belonging to the captain"
+	desc = "A metal flask belonging to the captain."
 	icon_state = "flask"
 	volume = 60
 	center_of_mass = list("x"=17, "y"=7)

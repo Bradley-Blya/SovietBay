@@ -42,6 +42,16 @@
 	P.overlays = list("paper_stamped_rd")
 	src.contents += P
 
+/obj/structure/noticeboard/rnd
+	notices = 1
+	icon_state = "nboard01"
+
+/obj/structure/noticeboard/rnd/New()
+	var/obj/item/weapon/paper/P = new()
+	P.name = "Important Note"
+	P.info = "<br>Stop dancing on that bush, it costs more than you all, idiots!"
+	src.contents += P
+
 //---- Bookcase
 
 /obj/structure/bookcase/manuals/xenoarchaeology
@@ -61,7 +71,7 @@
 
 /obj/structure/closet/secure_closet/xenoarchaeologist
 	name = "Xenoarchaeologist Locker"
-	req_access = list(access_tox_storage)
+	req_access = list(access_xenoarch)
 	icon_state = "secureres1"
 	icon_closed = "secureres"
 	icon_locked = "secureres1"
@@ -71,14 +81,21 @@
 
 	New()
 		..()
-		sleep(2)
+		if(prob(50))
+			new /obj/item/weapon/storage/backpack/toxins(src)
+		else
+			new /obj/item/weapon/storage/backpack/satchel_tox(src) 		
+		if(prob(50))
+			new /obj/item/weapon/storage/backpack/dufflebag(src)
 		new /obj/item/clothing/under/rank/scientist(src)
 		new /obj/item/clothing/suit/storage/toggle/labcoat(src)
 		new /obj/item/clothing/shoes/white(src)
 		new /obj/item/clothing/glasses/science(src)
 		new /obj/item/device/radio/headset/headset_sci(src)
+		new /obj/item/clothing/mask/gas(src) 		
+		new /obj/item/weapon/clipboard(src)
 		new /obj/item/weapon/storage/belt/archaeology(src)
-		new /obj/item/weapon/storage/box/excavation(src)
+		new /obj/item/weapon/storage/excavation(src)
 		return
 
 /obj/structure/closet/excavation
@@ -89,9 +106,8 @@
 
 	New()
 		..()
-		sleep(2)
 		new /obj/item/weapon/storage/belt/archaeology(src)
-		new /obj/item/weapon/storage/box/excavation(src)
+		new /obj/item/weapon/storage/excavation(src)
 		new /obj/item/device/flashlight/lantern(src)
 		new /obj/item/device/ano_scanner(src)
 		new /obj/item/device/depth_scanner(src)
@@ -105,6 +121,7 @@
 		new /obj/item/weapon/pickaxe/hand(src)
 		new /obj/item/weapon/storage/bag/fossils(src)
 		new /obj/item/weapon/hand_labeler(src)
+		new /obj/item/taperoll/research(src)
 		return
 
 //---- Isolation room air alarms

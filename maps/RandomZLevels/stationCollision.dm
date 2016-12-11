@@ -19,22 +19,22 @@
  * Areas
  */
  //Gateroom gets its own APC specifically for the gate
- /area/awaymission/gateroom
+/area/awaymission/gateroom
 
  //Library, medbay, storage room
- /area/awaymission/southblock
+/area/awaymission/southblock
 
  //Arrivals, security, hydroponics, shuttles (since they dont move, they dont need specific areas)
- /area/awaymission/arrivalblock
+/area/awaymission/arrivalblock
 
  //Crew quarters, cafeteria, chapel
- /area/awaymission/midblock
+/area/awaymission/midblock
 
  //engineering, bridge (not really north but it doesnt really need its own APC)
- /area/awaymission/northblock
+/area/awaymission/northblock
 
  //That massive research room
- /area/awaymission/research
+/area/awaymission/research
 
 //Syndicate shuttle
 /area/awaymission/syndishuttle
@@ -64,7 +64,7 @@ obj/item/weapon/gun/energy/laser/retro/sc_retro
 	name ="retro laser"
 	icon_state = "retro"
 	desc = "An older model of the basic lasergun, no longer used by Nanotrasen's security or military forces."
-	projectile_type = "/obj/item/projectile/practice"
+	projectile_type = /obj/item/projectile/practice
 	clumsy_check = 0 //No sense in having a harmless gun blow up in the clowns face
 
 //Syndicate silenced pistol. This definition is not necessary, it's just habit.

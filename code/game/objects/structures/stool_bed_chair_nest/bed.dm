@@ -12,7 +12,6 @@
 	desc = "This is used to lie in, sleep in or strap on."
 	icon = 'icons/obj/furniture.dmi'
 	icon_state = "bed"
-	pressure_resistance = 15
 	anchored = 1
 	can_buckle = 1
 	buckle_dir = SOUTH
@@ -57,6 +56,7 @@
 			I.color = padding_material.icon_colour
 			stool_cache[padding_cache_key] = I
 		overlays |= stool_cache[padding_cache_key]
+
 	// Strings.
 	desc = initial(desc)
 	if(padding_material)
@@ -85,11 +85,6 @@
 			if (prob(5))
 				qdel(src)
 				return
-
-/obj/structure/bed/blob_act()
-	if(prob(75))
-		material.place_sheet(get_turf(src))
-		qdel(src)
 
 /obj/structure/bed/attackby(obj/item/weapon/W as obj, mob/user as mob)
 	if(istype(W, /obj/item/weapon/wrench))
@@ -135,15 +130,9 @@
 		var/obj/item/weapon/grab/G = W
 		var/mob/living/affecting = G.affecting
 		user.visible_message("<span class='notice'>[user] attempts to buckle [affecting] into \the [src]!</span>")
-		if(do_after(user, 20))
-			affecting.loc = loc
-			spawn(0)
-				if(buckle_mob(affecting))
-					affecting.visible_message(\
-						"<span class='danger'>[affecting.name] is buckled to [src] by [user.name]!</span>",\
-						"<span class='danger'>You are buckled to [src] by [user.name]!</span>",\
-						"<span class='notice'>You hear metal clanking.</span>")
-			qdel(W)
+		if(do_after(user, 20, src))
+			if(user_buckle_mob(affecting, user))
+				qdel(W)
 	else
 		..()
 
@@ -212,7 +201,7 @@
 	desc = "A collapsed roller bed that can be carried around."
 	icon = 'icons/obj/rollerbed.dmi'
 	icon_state = "folded"
-	w_class = 4.0 // Can't be put in backpacks. Oh well.
+	w_class = 5 // Can't be put in backpacks. Oh well. For now.
 
 /obj/item/roller/attack_self(mob/user)
 		var/obj/structure/bed/roller/R = new /obj/structure/bed/roller(user.loc)
@@ -224,8 +213,8 @@
 	if(istype(W,/obj/item/roller_holder))
 		var/obj/item/roller_holder/RH = W
 		if(!RH.held)
-			user << "\blue You collect the roller bed."
-			src.loc = RH
+			user << "<span class='notice'>You collect the roller bed.</span>"
+			src.forceMove(RH)
 			RH.held = src
 			return
 
@@ -245,21 +234,20 @@
 /obj/item/roller_holder/attack_self(mob/user as mob)
 
 	if(!held)
-		user << "\blue The rack is empty."
+		user << "<span class='notice'>The rack is empty.</span>"
 		return
 
-	user << "\blue You deploy the roller bed."
+	user << "<span class='notice'>You deploy the roller bed.</span>"
 	var/obj/structure/bed/roller/R = new /obj/structure/bed/roller(user.loc)
 	R.add_fingerprint(user)
 	qdel(held)
 	held = null
 
 
-/obj/structure/bed/roller/Move()
-	..()
+/obj/structure/bed/roller/proc/move_buckled()
 	if(buckled_mob)
 		if(buckled_mob.buckled == src)
-			buckled_mob.loc = src.loc
+			buckled_mob.forceMove(src.loc)
 		else
 			buckled_mob = null
 
@@ -275,6 +263,15 @@
 		density = 0
 		icon_state = "down"
 
+	return ..()
+
+/obj/structure/bed/roller/buckle_mob()
+	. = ..()
+	if(.)
+		moved_event.register(src, src, /obj/structure/bed/roller/proc/move_buckled)
+
+/obj/structure/bed/roller/unbuckle_mob()
+	moved_event.unregister(src, src)
 	return ..()
 
 /obj/structure/bed/roller/MouseDrop(over_object, src_location, over_location)

@@ -45,6 +45,8 @@
 
 			var/trans = reagents.trans_to_obj(target, amount_per_transfer_from_this)
 			user << "<span class='notice'>You add [trans] units of the condiment to \the [target].</span>"
+		else
+			..()
 
 	feed_sound(var/mob/user)
 		playsound(user.loc, 'sound/items/drink.ogg', rand(10, 50), 1)
@@ -157,8 +159,7 @@
 	icon = 'icons/obj/food.dmi'
 	icon_state = "flour"
 	item_state = "flour"
+	randpixel = 10
 	New()
 		..()
 		reagents.add_reagent("flour", 30)
-		src.pixel_x = rand(-10.0, 10)
-		src.pixel_y = rand(-10.0, 10)

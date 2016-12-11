@@ -1,4 +1,5 @@
 /obj/item/clothing/mask/adjust
+	icon = 'icons/obj/clothing/masks_c.dmi'
 	w_class = 2
 	siemens_coefficient = 0.9
 	body_parts_covered = FACE
@@ -16,7 +17,6 @@
 	if(user.canmove && !user.stat)
 		if(!src.hanging)
 			src.hanging = !src.hanging
-			flags &= ~(MASKCOVERSMOUTH)
 			body_parts_covered = 0
 			icon_state = adjust_state
 			flags_inv = null
@@ -24,7 +24,6 @@
 
 		else
 			src.hanging = !src.hanging
-			flags |= MASKCOVERSMOUTH
 			body_parts_covered = initial(body_parts_covered)
 			icon_state = no_adjust_state
 			flags_inv = HIDEFACE

@@ -1,7 +1,5 @@
 # United Kingdom of Soviet Station 13 (Baystation 12 Fork)
 
-[Вебсайт](http://sovietstation.ru/) - [Код](https://github.com/AndyAdjutor/SovietBay) - [TeamSpeak 3](http://sovietstation.ru/index.php?showtopic=4969) - [Википедия](http://wiki.sovietstation.ru/)
-
 ---
 !ВНИМАНИЕ! 
 Перед редактированием карты обязательно используйте mapmerge! Расположена по следующему пути: "/tools/mapmerge". Инструкция на русском находится там же.
@@ -20,13 +18,6 @@
 (Подсказка: Удерживайте CTRL и нажмите Insert, чтобы скопировать в консоль Git Bash)
 
 Теперь вам нужно немного подождать для закачивания (Вы скачиваете все ветки, а они весят пол гигабайта), зато вы сможете обновляться с нашим репозиторием.
-
-Когда репозиторий будет скачан, запустите эту команду в консоль Git Bash:
-```bash
-cd Baystation12
-git update-index --assume-unchanged baystation12.int
-```
-После этого, Git будет игнорировать изменения в файле baystation12.int.
 
 ### УСТАНОВКА
 
@@ -67,9 +58,7 @@ git update-index --assume-unchanged baystation12.int
 
 После вновь скомпилируйте код, и все будет хорошо.
 
----
 
 ### Установка SQL
 
 База SQL необходима для работы Библиотеки (методом MySQL) и статистики игроков. Для самой базы SQL необходим MySQL сервер. Конфигурация для БД SQL расположена здесь: "/config/dbconfig.txt", а схема БД SQL тут - /SQL/tgstation.schema.sql
-Более подробную информацию спрашивайте в нашем TeamSpeak

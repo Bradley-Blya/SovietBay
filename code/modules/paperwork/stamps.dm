@@ -9,7 +9,6 @@
 	throw_speed = 7
 	throw_range = 15
 	matter = list(DEFAULT_WALL_MATERIAL = 60)
-	pressure_resistance = 2
 	attack_verb = list("stamped")
 
 /obj/item/weapon/stamp/captain
@@ -51,6 +50,10 @@
 /obj/item/weapon/stamp/centcomm
 	name = "centcomm rubber stamp"
 	icon_state = "stamp-cent"
+
+/obj/item/weapon/stamp/qm
+	name = "quartermaster's stamp"
+	icon_state = "stamp-qm"
 
 // Syndicate stamp to forge documents.
 /obj/item/weapon/stamp/chameleon/attack_self(mob/user as mob)

@@ -2,10 +2,8 @@ var/datum/antagonist/raider/raiders
 
 /datum/antagonist/raider
 	id = MODE_RAIDER
-	role_type = BE_RAIDER
 	role_text = "Raider"
 	role_text_plural = "Raiders"
-	bantype = "raider"
 	antag_indicator = "mutineer"
 	landmark_id = "voxstart"
 	welcome_text = "Use :H to talk on your encrypted channel."
@@ -19,6 +17,8 @@ var/datum/antagonist/raider/raiders
 
 	id_type = /obj/item/weapon/card/id/syndicate
 
+	faction = "pirate"
+
 	// Heist overrides check_victory() and doesn't need victory or loss strings/tags.
 	var/list/raider_uniforms = list(
 		/obj/item/clothing/under/soviet,
@@ -27,7 +27,7 @@ var/datum/antagonist/raider/raiders
 		/obj/item/clothing/under/serviceoveralls,
 		/obj/item/clothing/under/captain_fly,
 		/obj/item/clothing/under/det,
-		/obj/item/clothing/under/brown,
+		/obj/item/clothing/under/color/brown,
 		)
 
 	var/list/raider_shoes = list(
@@ -145,7 +145,7 @@ var/datum/antagonist/raider/raiders
 	var/win_msg = ""
 
 	//No objectives, go straight to the feedback.
-	if(config.objectives_disabled || !global_objectives.len)
+	if(config.objectives_disabled == CONFIG_OBJECTIVE_NONE || !global_objectives.len)
 		return
 
 	var/success = global_objectives.len
@@ -180,7 +180,7 @@ var/datum/antagonist/raider/raiders
 		else
 			win_msg += "<B>The Raiders were repelled!</B>"
 
-	world << "<span class='danger'><font size = 3>[win_type] [win_group] victory!</font>"
+	world << "<span class='danger'><font size = 3>[win_type] [win_group] victory!</font></span>"
 	world << "[win_msg]"
 	feedback_set_details("round_end_result","heist - [win_type] [win_group]")
 

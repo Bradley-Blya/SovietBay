@@ -1,14 +1,52 @@
+
+/*
+	The initialization of the game happens roughly like this:
+
+	1. All global variables are initialized (including the global_init instance).
+	2. The map is initialized, and map objects are created.
+	3. world/New() runs, creating the process scheduler (and the old master controller) and spawning their setup.
+	4. processScheduler/setup() runs, creating all the processes. game_controller/setup() runs, calling initialize() on all movable atoms in the world.
+	5. The gameticker is created.
+
+*/
 var/global/datum/global_init/init = new ()
 
 /*
 	Pre-map initialization stuff should go here.
 */
 /datum/global_init/New()
+	generate_gameid()
 
 	makeDatumRefLists()
+	populateGlobalLists()
 	load_configuration()
 
-	qdel(src)
+	initialize_chemical_reagents()
+	initialize_chemical_reactions()
+
+	qdel(src) //we're done
+
+/datum/global_init/Destroy()
+	return 1
+
+/var/game_id = null
+/proc/generate_gameid()
+	if(game_id != null)
+		return
+	game_id = ""
+
+	var/list/c = list("a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "1", "2", "3", "4", "5", "6", "7", "8", "9", "0")
+	var/l = c.len
+
+	var/t = world.timeofday
+	for(var/_ = 1 to 4)
+		game_id = "[c[(t % l) + 1]][game_id]"
+		t = round(t / l)
+	game_id = "-[game_id]"
+	t = round(world.realtime / (10 * 60 * 60 * 24))
+	for(var/_ = 1 to 3)
+		game_id = "[c[(t % l) + 1]][game_id]"
+		t = round(t / l)
 
 
 /world
@@ -19,14 +57,13 @@ var/global/datum/global_init/init = new ()
 	cache_lifespan = 0	//stops player uploaded stuff from being kept in the rsc past the current session
 
 
-
-#define RECOMMENDED_VERSION 501
+#define RECOMMENDED_VERSION 509
 /world/New()
 	//logs
 	var/date_string = time2text(world.realtime, "YYYY/MM-Month/DD-Day")
 	href_logfile = file("data/logs/[date_string] hrefs.htm")
 	diary = file("data/logs/[date_string].log")
-	diary << "[log_end]\n[log_end]\nStarting up. [time2text(world.timeofday, "hh:mm.ss")][log_end]\n---------------------[log_end]"
+	diary << "[log_end]\n[log_end]\nStarting up. (ID: [game_id]) [time2text(world.timeofday, "hh:mm.ss")][log_end]\n---------------------[log_end]"
 	changelog_hash = md5('html/changelog.html')					//used for telling if the changelog has changed recently
 
 	if(byond_version < RECOMMENDED_VERSION)
@@ -50,7 +87,14 @@ var/global/datum/global_init/init = new ()
 
 	. = ..()
 
+#ifndef UNIT_TEST
+
 	sleep_offline = 1
+
+#else
+	log_unit_test("Unit Tests Enabled.  This will destroy the world when testing is complete.")
+	load_unit_test_changes()
+#endif
 
 	// Set up roundstart seed list.
 	plant_controller = new()
@@ -58,9 +102,20 @@ var/global/datum/global_init/init = new ()
 	// This is kinda important. Set up details of what the hell things are made of.
 	populate_material_list()
 
-	//Create the asteroid Z-level.
 	if(config.generate_asteroid)
-		new /datum/random_map(null,13,32,5,217,223)
+		// These values determine the specific area that the map is applied to.
+		// If you do not use the official Baycode moonbase map, you will need to change them.
+		//Create the mining Z-level.
+		new /datum/random_map/automata/cave_system(null,1,1,5,255,255)
+		//new /datum/random_map/noise/volcanism(null,1,1,5,255,255) // Not done yet! Pretty, though.
+		// Create the mining ore distribution map.
+		new /datum/random_map/noise/ore(null, 1, 1, 5, 64, 64)
+		// Update all turfs to ensure everything looks good post-generation. Yes,
+		// it's brute-forcey, but frankly the alternative is a mine turf rewrite.
+		for(var/turf/simulated/mineral/M in world) // Ugh.
+			M.updateMineralOverlays()
+		for(var/turf/simulated/floor/asteroid/M in world) // Uuuuuugh.
+			M.updateMineralOverlays()
 
 	// Create autolathe recipes, as above.
 	populate_lathe_recipes()
@@ -74,6 +129,11 @@ var/global/datum/global_init/init = new ()
 		processScheduler.deferSetupFor(/datum/controller/process/ticker)
 		processScheduler.setup()
 		master_controller.setup()
+#ifdef UNIT_TEST
+		initialize_unit_tests()
+#endif
+
+
 
 	spawn(3000)		//so we aren't adding to the round-start lag
 		if(config.ToRban)
@@ -115,8 +175,9 @@ var/world_topic_spam_protect_time = world.timeofday
 
 		// This is dumb, but spacestation13.com's banners break if player count isn't the 8th field of the reply, so... this has to go here.
 		s["players"] = 0
-		s["stationtime"] = worldtime2text()
-		s["roundduration"] = round_duration()
+		s["stationtime"] = stationtime2text()
+		s["roundduration"] = roundduration2text()
+		s["map"] = using_map.full_name
 
 		if(input["status"] == "2")
 			var/list/players = list()
@@ -158,6 +219,7 @@ var/world_topic_spam_protect_time = world.timeofday
 				"eng" = engineering_positions,
 				"med" = medical_positions,
 				"sci" = science_positions,
+				"car" = cargo_positions,
 				"civ" = civilian_positions,
 				"bot" = nonhuman_positions
 			)
@@ -186,9 +248,9 @@ var/world_topic_spam_protect_time = world.timeofday
 
 	else if(T == "revision")
 		if(revdata.revision)
-			return list2params(list(branch = revdata.branch, date = revdata.date, revision = revdata.revision))
+			return list2params(list(branch = revdata.branch, date = revdata.date, revision = revdata.revision, gameid = game_id))
 		else
-			return "unknown"
+			return list2params(list(revision = "unknown", gameid = game_id))
 
 	else if(copytext(T,1,5) == "info")
 		var/input[] = params2list(T)
@@ -216,6 +278,10 @@ var/world_topic_spam_protect_time = world.timeofday
 			if(M.mind)
 				strings += M.mind.assigned_role
 				strings += M.mind.special_role
+			if(ishuman(M))
+				var/mob/living/carbon/human/H = M
+				if(H.species)
+					strings += H.species.name
 			for(var/text in strings)
 				if(ckey(text) in ckeysearch)
 					match[M] += 10 // an exact match is far better than a partial one
@@ -257,8 +323,14 @@ var/world_topic_spam_protect_time = world.timeofday
 							clone = L.getCloneLoss(),
 							brain = L.getBrainLoss()
 						))
+				if(ishuman(M))
+					var/mob/living/carbon/human/H = M
+					info["species"] = H.species.name
+				else
+					info["species"] = "non-human"
 			else
 				info["damage"] = "non-living"
+				info["species"] = "non-human"
 			info["gender"] = M.gender
 			return list2params(info)
 		else
@@ -371,9 +443,14 @@ var/world_topic_spam_protect_time = world.timeofday
 
 	processScheduler.stop()
 
-	for(var/client/C in clients)
-		if(config.server)	//if you set a server location in config.txt, it sends you there instead of trying to reconnect to the same world address. -- NeoFite
+	if(config.server)	//if you set a server location in config.txt, it sends you there instead of trying to reconnect to the same world address. -- NeoFite
+		for(var/client/C in clients)
 			C << link("byond://[config.server]")
+
+	if(config.wait_for_sigusr1_reboot && reason != 3)
+		text2file("foo", "reboot_called")
+		world << "<span class=danger>World reboot waiting for external scripts. Please be patient.</span>"
+		return
 
 	..(reason)
 
@@ -382,6 +459,9 @@ var/world_topic_spam_protect_time = world.timeofday
 	return 1
 
 /world/proc/load_mode()
+	if(!fexists("data/mode.txt"))
+		return
+
 	var/list/Lines = file2list("data/mode.txt")
 	if(Lines.len)
 		if(Lines[1])
@@ -419,7 +499,7 @@ var/world_topic_spam_protect_time = world.timeofday
 		if (!text)
 			error("Failed to load config/mods.txt")
 		else
-			var/list/lines = text2list(text, "\n")
+			var/list/lines = splittext(text, "\n")
 			for(var/line in lines)
 				if (!line)
 					continue
@@ -440,7 +520,7 @@ var/world_topic_spam_protect_time = world.timeofday
 		if (!text)
 			error("Failed to load config/mentors.txt")
 		else
-			var/list/lines = text2list(text, "\n")
+			var/list/lines = splittext(text, "\n")
 			for(var/line in lines)
 				if (!line)
 					continue
@@ -457,10 +537,16 @@ var/world_topic_spam_protect_time = world.timeofday
 /world/proc/update_status()
 	var/s = ""
 
+	if (config && config.server_group)
+		if (config && config.server_group_url)
+			s += "<b>\[<a href=\"[config.server_group_url]\">[config.server_group]</a>\] - </b>"
+		else
+			s += "<b>\[[config.server_group]\] - </b>"
+
 	if (config && config.server_name)
 		s += "<b>[config.server_name]</b> &#8212; "
 
-	s += "<b>[station_name()]</b>(<a href=\"[config.forumurl]\"> Join Soviet Community!</a>)"
+	s += "<b>[station_name()]</b>(<a href=\"[config.forumurl]\">forum</a>)"
 
 	var/list/features = list()
 
@@ -491,17 +577,12 @@ var/world_topic_spam_protect_time = world.timeofday
 	else if (n > 0)
 		features += "~[n] player"
 
-	/*
-	is there a reason for this? the byond site shows 'hosted by X' when there is a proper host already.
-	if (host)
-		features += "hosted by <b>[host]</b>"
-	*/
 
-	if (!host && config && config.hostedby)
+	if (config && config.hostedby)
 		features += "hosted by <b>[config.hostedby]</b>"
 
 	if (features)
-		s += ": [list2text(features, ", ")]"
+		s += ": [jointext(features, ", ")]"
 
 	/* does this help? I do not know */
 	if (src.status != s)

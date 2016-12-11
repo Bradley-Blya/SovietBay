@@ -26,6 +26,7 @@ a:visited				{color: #0000ff;}
 .ooc .moderator			{color: #184880;}
 .ooc .developer			{color: #1b521f;}
 .ooc .admin				{color: #b82e00;}
+.ooc .aooc				{color: #960018;}
 
 /* Admin: Private Messages */
 .pm  .howto				{color: #ff0000;	font-weight: bold;		font-size: 200%;}
@@ -49,6 +50,7 @@ a:visited				{color: #0000ff;}
 .syndradio				{color: #6D3F40;}
 .centradio				{color: #5C5C8A;}
 .airadio				{color: #FF00FF;}
+.entradio				{color: #339966;}
 
 .secradio				{color: #A30000;}
 .engradio				{color: #A66300;}
@@ -97,6 +99,9 @@ h1.alert, h2.alert		{color: #000000;}
 .say_quote				{font-family: Georgia, Verdana, sans-serif;}
 
 .interface				{color: #330033;}
+
+.good                   {color: #4f7529; font-weight: bold;}
+.bad                    {color: #ee0000; font-weight: bold;}
 
 BIG IMG.icon 			{width: 32px; height: 32px;}
 

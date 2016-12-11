@@ -7,52 +7,67 @@
 	slot_flags = SLOT_TIE
 	w_class = 2.0
 	var/slot = "decor"
-	var/obj/item/clothing/under/has_suit = null		//the suit the tie may be attached to
+	var/obj/item/clothing/has_suit = null		//the suit the tie may be attached to
 	var/image/inv_overlay = null	//overlay used when attached to clothing.
-	var/image/mob_overlay = null
+	var/list/mob_overlay = list()
 	var/overlay_state = null
+
+	sprite_sheets = list("Resomi" = 'icons/mob/species/resomi/ties.dmi') // for species where human variants do not fit
+
+/obj/item/clothing/accessory/Destroy()
+	on_removed()
+	return ..()
 
 /obj/item/clothing/accessory/proc/get_inv_overlay()
 	if(!inv_overlay)
-		if(!mob_overlay)
-			get_mob_overlay()
-		
-		var/tmp_icon_state = "[overlay_state? "[overlay_state]" : "[icon_state]"]"
-		if(icon_override)
-			if("[tmp_icon_state]_tie" in icon_states(icon_override))
-				tmp_icon_state = "[tmp_icon_state]_tie"
-		inv_overlay = image(icon = mob_overlay.icon, icon_state = tmp_icon_state, dir = SOUTH)
+		var/tmp_icon_state = overlay_state? overlay_state : icon_state
+		if(icon_override && ("[tmp_icon_state]_tie" in icon_states(icon_override)))
+			inv_overlay = image(icon = icon_override, icon_state = "[tmp_icon_state]_tie", dir = SOUTH)
+		else
+			inv_overlay = image(icon = INV_ACCESSORIES_DEF_ICON, icon_state = tmp_icon_state, dir = SOUTH)
 	return inv_overlay
 
-/obj/item/clothing/accessory/proc/get_mob_overlay()
-	if(!mob_overlay)
-		var/tmp_icon_state = "[overlay_state? "[overlay_state]" : "[icon_state]"]"
-		if(icon_override)
-			if("[tmp_icon_state]_mob" in icon_states(icon_override))
-				tmp_icon_state = "[tmp_icon_state]_mob"
-			mob_overlay = image("icon" = icon_override, "icon_state" = "[tmp_icon_state]")
+/obj/item/clothing/accessory/proc/get_mob_overlay(var/mob/user_mob)
+	var/bodytype = "Default"
+	if(ishuman(user_mob))
+		var/mob/living/carbon/human/user_human = user_mob
+		if(user_human.species.get_bodytype() in sprite_sheets)
+			bodytype = user_human.species.get_bodytype()
+
+	if(!mob_overlay[bodytype])
+		var/tmp_icon_state = overlay_state? overlay_state : icon_state
+		var/use_sprite_sheet = INV_ACCESSORIES_DEF_ICON
+		if(sprite_sheets[bodytype])
+			use_sprite_sheet = sprite_sheets[bodytype]
+
+		if(icon_override && ("[tmp_icon_state]_mob" in icon_states(icon_override)))
+			mob_overlay[bodytype] = image(icon = icon_override, icon_state = "[tmp_icon_state]_mob")
 		else
-			mob_overlay = image("icon" = INV_ACCESSORIES_DEF_ICON, "icon_state" = "[tmp_icon_state]")
-	return mob_overlay
+			mob_overlay[bodytype] = image(icon = use_sprite_sheet, icon_state = tmp_icon_state)
+	return mob_overlay[bodytype]
 
 //when user attached an accessory to S
-/obj/item/clothing/accessory/proc/on_attached(obj/item/clothing/under/S, mob/user as mob)
+/obj/item/clothing/accessory/proc/on_attached(var/obj/item/clothing/S, var/mob/user)
 	if(!istype(S))
 		return
 	has_suit = S
 	loc = has_suit
 	has_suit.overlays += get_inv_overlay()
 
-	user << "<span class='notice'>You attach [src] to [has_suit].</span>"
-	src.add_fingerprint(user)
+	if(user)
+		user << "<span class='notice'>You attach \the [src] to \the [has_suit].</span>"
+		src.add_fingerprint(user)
 
-/obj/item/clothing/accessory/proc/on_removed(mob/user as mob)
+/obj/item/clothing/accessory/proc/on_removed(var/mob/user)
 	if(!has_suit)
 		return
 	has_suit.overlays -= get_inv_overlay()
 	has_suit = null
-	usr.put_in_hands(src)
-	src.add_fingerprint(user)
+	if(user)
+		usr.put_in_hands(src)
+		src.add_fingerprint(user)
+	else
+		src.forceMove(get_turf(src))
 
 //default attackby behaviour
 /obj/item/clothing/accessory/attackby(obj/item/I, mob/user)
@@ -71,6 +86,26 @@
 /obj/item/clothing/accessory/red
 	name = "red tie"
 	icon_state = "redtie"
+
+/obj/item/clothing/accessory/blue_clip
+	name = "blue tie with a clip"
+	icon_state = "bluecliptie"
+
+/obj/item/clothing/accessory/red_long
+	name = "red long tie"
+	icon_state = "redlongtie"
+
+/obj/item/clothing/accessory/black
+	name = "black tie"
+	icon_state = "blacktie"
+
+/obj/item/clothing/accessory/yellow
+	name = "yellow tie"
+	icon_state = "yellowtie"
+
+/obj/item/clothing/accessory/navy
+	name = "navy tie"
+	icon_state = "navytie"
 
 /obj/item/clothing/accessory/horrible
 	name = "horrible tie"
@@ -142,7 +177,7 @@
 
 /obj/item/clothing/accessory/medal/conduct
 	name = "distinguished conduct medal"
-	desc = "A bronze medal awarded for distinguished conduct. Whilst a great honor, this is most basic award given by Nanotrasen. It is often awarded by a captain to a member of their crew."
+	desc = "A bronze medal awarded for distinguished conduct. Whilst a great honor, this is most basic award on offer. It is often awarded by a captain to a member of their crew."
 
 /obj/item/clothing/accessory/medal/bronze_heart
 	name = "bronze heart medal"
@@ -164,7 +199,7 @@
 
 /obj/item/clothing/accessory/medal/silver/security
 	name = "robust security award"
-	desc = "An award for distinguished combat and sacrifice in defence of Nanotrasen's commercial interests. Often awarded to security staff."
+	desc = "An award for distinguished combat and sacrifice in defence of corporate commercial interests. Often awarded to security staff."
 
 /obj/item/clothing/accessory/medal/gold
 	name = "gold medal"
@@ -173,8 +208,8 @@
 
 /obj/item/clothing/accessory/medal/gold/captain
 	name = "medal of captaincy"
-	desc = "A golden medal awarded exclusively to those promoted to the rank of captain. It signifies the codified responsibilities of a captain to Nanotrasen, and their undisputable authority over their crew."
+	desc = "A golden medal awarded exclusively to those promoted to the rank of captain. It signifies the codified responsibilities of a captain, and their undisputable authority over their crew."
 
 /obj/item/clothing/accessory/medal/gold/heroism
 	name = "medal of exceptional heroism"
-	desc = "An extremely rare golden medal awarded only by CentComm. To recieve such a medal is the highest honor and as such, very few exist. This medal is almost never awarded to anybody but commanders."
+	desc = "An extremely rare golden medal awarded only by company officials. To recieve such a medal is the highest honor and as such, very few exist. This medal is almost never awarded to anybody but commanders."

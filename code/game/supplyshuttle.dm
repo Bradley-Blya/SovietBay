@@ -1,8 +1,6 @@
 //Config stuff
 #define SUPPLY_DOCKZ 2          //Z-level of the Dock.
 #define SUPPLY_STATIONZ 1       //Z-level of the Station.
-#define SUPPLY_STATION_AREATYPE "/area/supply/station" //Type of the supply shuttle area for station
-#define SUPPLY_DOCK_AREATYPE "/area/supply/dock"	//Type of the supply shuttle area for dock
 
 //Supply packs are in /code/defines/obj/supplypacks.dm
 //Computers are in /code/game/machinery/computer/supply.dm
@@ -31,6 +29,7 @@ var/list/mechtoys = list(
 	name = "Supply Shuttle"
 	icon_state = "shuttle3"
 	requires_power = 0
+	base_turf = /turf/simulated/floor/plating
 
 /area/supply/dock
 	name = "Supply Shuttle"
@@ -70,11 +69,7 @@ var/list/mechtoys = list(
 		for(var/mob_type in mobs_can_pass)
 			if(istype(A, mob_type))
 				return ..()
-		if(istype(A, /mob/living/carbon/human))
-			var/mob/living/carbon/human/H = M
-			if(H.species.is_small)
-				return ..()
-		return 0
+		return issmall(M)
 
 	return ..()
 
@@ -239,7 +234,7 @@ var/list/mechtoys = list(
 			var/datum/supply_packs/SP = SO.object
 
 			var/obj/A = new SP.containertype(pickedloc)
-			A.name = "[SP.containername] [SO.comment ? "([SO.comment])":"" ]"
+			A.name = "[SP.containername][SO.comment ? " ([SO.comment])":"" ]"
 
 			//supply manifest generation begin
 
@@ -275,9 +270,11 @@ var/list/mechtoys = list(
 
 			for(var/typepath in contains)
 				if(!typepath)	continue
-				var/atom/B2 = new typepath(A)
-				if(SP.amount && B2:amount) B2:amount = SP.amount
-				if(slip) slip.info += "<li>[B2.name]</li>" //add the item to the manifest
+				var/number_of_items = max(1, contains[typepath])
+				for(var/j = 1 to number_of_items)
+					var/atom/B2 = new typepath(A)
+					if(SP.amount && B2:amount) B2:amount = SP.amount
+					if(slip) slip.info += "<li>[B2.name]</li>" //add the item to the manifest
 
 			//manifest finalisation
 			if(slip)

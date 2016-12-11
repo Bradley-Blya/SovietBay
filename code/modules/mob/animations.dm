@@ -81,26 +81,13 @@ note dizziness decrements automatically in the mob's Life() proc.
 /mob/var/is_floating = 0
 /mob/var/floatiness = 0
 
-/mob/proc/update_floating(var/dense_object=0)
+/mob/proc/update_floating()
 
-	if(anchored||buckled)
+	if(anchored || buckled || check_solid_ground())
 		make_floating(0)
 		return
 
-	var/turf/turf = get_turf(src)
-	if(!istype(turf,/turf/space))
-		var/area/A = turf.loc
-		if(istype(A) && A.has_gravity)
-			make_floating(0)
-			return
-		else if (Check_Shoegrip())
-			make_floating(0)
-			return
-		else
-			make_floating(1)
-			return
-
-	if(dense_object && Check_Shoegrip())
+	if(Check_Shoegrip() && Check_Dense_Object())
 		make_floating(0)
 		return
 
@@ -108,7 +95,6 @@ note dizziness decrements automatically in the mob's Life() proc.
 	return
 
 /mob/proc/make_floating(var/n)
-
 	floatiness = n
 
 	if(floatiness && !is_floating)
@@ -170,6 +156,42 @@ note dizziness decrements automatically in the mob's Life() proc.
 	..()
 	is_floating = 0 // If we were without gravity, the bouncing animation got stopped, so we make sure we restart the bouncing after the next movement.
 
+	// What icon do we use for the attack?
+	var/image/I
+	if(hand && l_hand) // Attacked with item in left hand.
+		I = image(l_hand.icon, A, l_hand.icon_state, A.layer + 1)
+	else if (!hand && r_hand) // Attacked with item in right hand.
+		I = image(r_hand.icon, A, r_hand.icon_state, A.layer + 1)
+	else // Attacked with a fist?
+		return
+
+	// Who can see the attack?
+	var/list/viewing = list()
+	for (var/mob/M in viewers(A))
+		if (M.client)
+			viewing |= M.client
+	flick_overlay(I, viewing, 5) // 5 ticks/half a second
+
+	// Scale the icon.
+	I.transform *= 0.75
+	// Set the direction of the icon animation.
+	var/direction = get_dir(src, A)
+	if(direction & NORTH)
+		I.pixel_y = -16
+	else if(direction & SOUTH)
+		I.pixel_y = 16
+
+	if(direction & EAST)
+		I.pixel_x = -16
+	else if(direction & WEST)
+		I.pixel_x = 16
+
+	if(!direction) // Attacked self?!
+		I.pixel_z = 16
+
+	// And animate the attack!
+	animate(I, alpha = 175, pixel_x = 0, pixel_y = 0, pixel_z = 0, time = 3)
+
 /mob/proc/spin(spintime, speed)
 	spawn()
 		var/D = dir
@@ -187,3 +209,17 @@ note dizziness decrements automatically in the mob's Life() proc.
 			set_dir(D)
 			spintime -= speed
 	return
+
+/mob/proc/phase_in(var/turf/T)
+	if(!T)
+		return
+
+	playsound(T, 'sound/effects/phasein.ogg', 25, 1)
+	playsound(T, 'sound/effects/sparks2.ogg', 50, 1)
+	anim(T,src,'icons/mob/mob.dmi',,"phasein",,dir)
+
+/mob/proc/phase_out(var/turf/T)
+	if(!T)
+		return
+	playsound(T, "sparks", 50, 1)
+	anim(T,src,'icons/mob/mob.dmi',,"phaseout",,dir)

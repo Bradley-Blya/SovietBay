@@ -8,7 +8,7 @@
 			return
 		src << link(config.wikiurl)
 	else
-		src << "\red The wiki URL is not set in the server configuration."
+		src << "<span class='warning'>The wiki URL is not set in the server configuration.</span>"
 	return
 
 /client/verb/forum()
@@ -20,7 +20,7 @@
 			return
 		src << link(config.forumurl)
 	else
-		src << "\red The forum URL is not set in the server configuration."
+		src << "<span class='warning'>The forum URL is not set in the server configuration.</span>"
 	return
 
 #define RULES_FILE "config/rules.html"
@@ -35,6 +35,8 @@
 	set name = "donate"
 	set desc = "Donate."
 	set hidden = 1
+	alert("Not today","Ok")
+	return
 	if(alert("This will open the donate page in your browser. Are you sure?",,"Yes","No")=="No")
 		return
 	src << link("http://sovietstation.ru/index.php?showtopic=145")

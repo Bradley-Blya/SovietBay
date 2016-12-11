@@ -2,8 +2,14 @@
 /datum/hud/proc/unplayer_hud()
 	return
 
+/mob/observer/ghost/instantiate_hud(var/datum/hud/HUD)
+	HUD.ghost_hud()
+
 /datum/hud/proc/ghost_hud()
 	return
+
+/mob/living/carbon/brain/instantiate_hud(var/datum/hud/HUD)
+	HUD.brain_hud()
 
 /datum/hud/proc/brain_hud(ui_style = 'icons/mob/screen1_Midnight.dmi')
 	mymob.blind = new /obj/screen()
@@ -12,6 +18,9 @@
 	mymob.blind.name = " "
 	mymob.blind.screen_loc = "1,1"
 	mymob.blind.layer = 0
+
+/mob/living/silicon/ai/instantiate_hud(var/datum/hud/HUD)
+	HUD.ai_hud()
 
 /datum/hud/proc/ai_hud()
 	return
@@ -22,17 +31,21 @@
 	blobpwrdisplay.name = "blob power"
 	blobpwrdisplay.icon_state = "block"
 	blobpwrdisplay.screen_loc = ui_health
-	blobpwrdisplay.layer = 20
+	blobpwrdisplay.layer = SCREEN_LAYER
 
 	blobhealthdisplay = new /obj/screen()
 	blobhealthdisplay.name = "blob health"
 	blobhealthdisplay.icon_state = "block"
 	blobhealthdisplay.screen_loc = ui_internal
-	blobhealthdisplay.layer = 20
+	blobhealthdisplay.layer = SCREEN_LAYER
 
-	mymob.client.screen = null
+	mymob.client.screen = list()
 
 	mymob.client.screen += list(blobpwrdisplay, blobhealthdisplay)
+	common_hud()
+
+/mob/living/carbon/slime/instantiate_hud(var/datum/hud/HUD)
+	HUD.slime_hud()
 
 /datum/hud/proc/slime_hud(ui_style = 'icons/mob/screen1_Midnight.dmi')
 
@@ -46,7 +59,7 @@
 	using.icon = ui_style
 	using.icon_state = "intent_"+mymob.a_intent
 	using.screen_loc = ui_zonesel
-	using.layer = 20
+	using.layer = SCREEN_LAYER
 	src.adding += using
 	action_intent = using
 
@@ -57,7 +70,7 @@
 	ico.MapColors(0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, -1,-1,-1,-1)
 	ico.DrawBox(rgb(255,255,255,1),1,ico.Height()/2,ico.Width()/2,ico.Height())
 	using = new /obj/screen( src )
-	using.name = "help"
+	using.name = I_HELP
 	using.icon = ico
 	using.screen_loc = ui_zonesel
 	using.layer = 21
@@ -68,7 +81,7 @@
 	ico.MapColors(0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, -1,-1,-1,-1)
 	ico.DrawBox(rgb(255,255,255,1),ico.Width()/2,ico.Height()/2,ico.Width(),ico.Height())
 	using = new /obj/screen( src )
-	using.name = "disarm"
+	using.name = I_DISARM
 	using.icon = ico
 	using.screen_loc = ui_zonesel
 	using.layer = 21
@@ -79,7 +92,7 @@
 	ico.MapColors(0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, -1,-1,-1,-1)
 	ico.DrawBox(rgb(255,255,255,1),ico.Width()/2,1,ico.Width(),ico.Height()/2)
 	using = new /obj/screen( src )
-	using.name = "grab"
+	using.name = I_GRAB
 	using.icon = ico
 	using.screen_loc = ui_zonesel
 	using.layer = 21
@@ -97,8 +110,9 @@
 	src.adding += using
 	hurt_intent = using
 
-	mymob.client.screen = null
+	mymob.client.screen = list()
 	mymob.client.screen += src.adding
+	common_hud()
 
 	return
 
@@ -121,7 +135,7 @@
 	mymob.flash.icon = 'icons/mob/screen1.dmi'
 	mymob.flash.icon_state = "blank"
 	mymob.flash.name = "flash"
-	mymob.flash.screen_loc = "1,1 to 15,15"
+	mymob.flash.screen_loc = ui_entire_screen
 	mymob.flash.layer = 17
 
 	if(constructtype)
@@ -154,6 +168,7 @@
 		mymob.purged.name = "purged"
 		mymob.purged.screen_loc = ui_construct_purge
 
-	mymob.client.screen = null
+	mymob.client.screen = list()
 
 	mymob.client.screen += list(mymob.fire, mymob.healths, mymob.pullin, mymob.zone_sel, mymob.purged, mymob.flash)
+	common_hud()

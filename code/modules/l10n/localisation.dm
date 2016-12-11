@@ -1,6 +1,6 @@
 
 /*
-	This should be in code/setup.dm
+	This should be in code/__defines/misc.dm
 
 #define SANITIZE_CHAT 1
 #define SANITIZE_BROWSER 2
@@ -23,6 +23,20 @@
 	var/log = ""			//letter for logs
 	var/temp = ""			//temporatory letter for filled input windows
 							//!!!temp must be unique for every letter!!!
+
+	autofix_proper
+		letter = "\proper"
+		chat = ""
+		browser = ""
+		log = ""
+		temp = ""
+
+	autofix_improper
+		letter = "\improper"
+		chat = ""
+		browser = ""
+		log = ""
+		temp = ""
 
 	cyrillic_ya
 		letter = "ÿ"

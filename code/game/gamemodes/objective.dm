@@ -12,6 +12,7 @@ datum/objective
 		all_objectives |= src
 		if(text)
 			explanation_text = text
+		..()
 
 	Destroy()
 		all_objectives -= src
@@ -126,7 +127,7 @@ datum/objective/anti_revolution/demote
 	find_target()
 		..()
 		if(target && target.current)
-			explanation_text = "[target.current.real_name], the [target.assigned_role]  has been classified as harmful to NanoTrasen's goals. Demote \him[target.current] to assistant."
+			explanation_text = "[target.current.real_name], the [target.assigned_role]  has been classified as harmful to [company_name]'s goals. Demote \him[target.current] to assistant."
 		else
 			explanation_text = "Free Objective"
 		return target
@@ -134,7 +135,7 @@ datum/objective/anti_revolution/demote
 	find_target_by_role(role, role_type=0)
 		..(role, role_type)
 		if(target && target.current)
-			explanation_text = "[target.current.real_name], the [!role_type ? target.assigned_role : target.special_role] has been classified as harmful to NanoTrasen's goals. Demote \him[target.current] to assistant."
+			explanation_text = "[target.current.real_name], the [!role_type ? target.assigned_role : target.special_role] has been classified as harmful to [company_name]'s goals. Demote \him[target.current] to assistant."
 		else
 			explanation_text = "Free Objective"
 		return target
@@ -621,9 +622,32 @@ datum/objective/capture
 
 		explanation_text = "Absorb [target_amount] compatible genomes."
 		return target_amount
-
 	check_completion()
 		if(owner && owner.changeling && owner.changeling.absorbed_dna && (owner.changeling.absorbedcount >= target_amount))
+			return 1
+		else
+			return 0
+/datum/objective/absorb_drink
+	proc/gen_amount_goal(var/lowbound = 200, var/highbound = 400)
+		target_amount = rand (lowbound,highbound)
+		if (ticker)
+			var/n_p = 1 //autowin
+			if (ticker.current_state == GAME_STATE_SETTING_UP)
+				for(var/mob/new_player/P in player_list)
+					if(P.client && P.ready && P.mind!=owner)
+						n_p ++
+			else if (ticker.current_state == GAME_STATE_PLAYING)
+				for(var/mob/living/carbon/human/P in player_list)
+					if(P.client && !(P.mind.vampire) && P.mind!=owner)
+						n_p ++
+			var/vamp_n_p = 150 * n_p
+			target_amount = min(target_amount, vamp_n_p)
+
+		explanation_text = "Absorb [target_amount] blood uncies."
+		return target_amount
+
+	check_completion()
+		if(owner && owner.vampire && owner.vampire.bloodtotal && (owner.vampire.bloodtotal >= target_amount))
 			return 1
 		else
 			return 0

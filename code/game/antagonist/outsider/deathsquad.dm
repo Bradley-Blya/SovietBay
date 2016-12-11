@@ -2,10 +2,9 @@ var/datum/antagonist/deathsquad/deathsquad
 
 /datum/antagonist/deathsquad
 	id = MODE_DEATHSQUAD
-	role_type = BE_OPERATIVE
 	role_text = "Death Commando"
 	role_text_plural = "Death Commandos"
-	welcome_text = "You work in the service of Central Command Asset Protection, answering directly to the Board of Directors."
+	welcome_text = "You work in the service of corporate Asset Protection, answering directly to the Board of Directors."
 	landmark_id = "Commando"
 	flags = ANTAG_OVERRIDE_JOB | ANTAG_OVERRIDE_MOB | ANTAG_HAS_NUKE | ANTAG_HAS_LEADER | ANTAG_RANDOM_EXCEPTED
 	default_access = list(access_cent_general, access_cent_specops, access_cent_living, access_cent_storage)
@@ -15,6 +14,8 @@ var/datum/antagonist/deathsquad/deathsquad
 	hard_cap_round = 8
 	initial_spawn_req = 4
 	initial_spawn_target = 6
+
+	faction = "deathsquad"
 
 	var/deployed = 0
 
@@ -53,7 +54,7 @@ var/datum/antagonist/deathsquad/deathsquad
 
 	var/obj/item/weapon/card/id/id = create_id("Asset Protection", player)
 	if(id)
-		id.access |= get_all_accesses()
+		id.access |= get_all_station_access()
 		id.icon_state = "centcom"
 	create_radio(DTH_FREQ, player)
 
@@ -70,7 +71,7 @@ var/datum/antagonist/deathsquad/deathsquad
 	var/syndicate_commando_name = pick(last_names)
 
 	var/datum/preferences/A = new() //Randomize appearance for the commando.
-	A.randomize_appearance_for(player.current)
+	A.randomize_appearance_and_body_for(player.current)
 
 	player.name = "[syndicate_commando_rank] [syndicate_commando_name]"
 	player.current.name = player.name

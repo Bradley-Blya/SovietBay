@@ -2,7 +2,7 @@
 	name = "Medbot"
 	desc = "A little medical robot. He looks somewhat underwhelmed."
 	icon_state = "medibot0"
-	req_access = list(access_medical)
+	req_one_access = list(access_medical, access_robotics)
 
 	var/skin = null //Set to "tox", "ointment" or "o2" for the other two firstaid kits.
 	botcard_access = list(access_medical, access_morgue, access_surgery, access_chemistry, access_virology, access_genetics)
@@ -130,7 +130,7 @@
 	else
 		dat += "None Loaded"
 	dat += "<br>Behaviour controls are [locked ? "locked" : "unlocked"]<hr>"
-	if(!locked || issilicon(user))
+	if(!locked || issilicon(usr) || usr == src)
 		dat += "<TT>Healing Threshold: "
 		dat += "<a href='?src=\ref[src];adj_threshold=-10'>--</a> "
 		dat += "<a href='?src=\ref[src];adj_threshold=-5'>-</a> "
@@ -151,6 +151,9 @@
 		dat += "Treatment report is [declare_treatment ? "on" : "off"]. <a href='?src=\ref[src];declaretreatment=[1]'>Toggle</a><br>"
 
 		dat += "The speaker switch is [vocal ? "on" : "off"]. <a href='?src=\ref[src];togglevoice=[1]'>Toggle</a><br>"
+
+	if(istype(user, /mob/living/silicon/ai))
+		dat += "<BR><A href='?src=\ref[src];ai_assume=1'>Assume AI control</A><BR>"
 
 	user << browse("<HEAD><TITLE>Medibot v1.0 controls</TITLE></HEAD>[dat]", "window=automed")
 	onclose(user, "automed")
@@ -184,7 +187,7 @@
 		else
 			turn_on()
 
-	else if((href_list["adj_threshold"]) && (!locked || issilicon(usr)))
+	else if((href_list["adj_threshold"]) && (!locked || issilicon(usr) || usr == src))
 		var/adjust_num = text2num(href_list["adj_threshold"])
 		heal_threshold += adjust_num
 		if(heal_threshold < 5)
@@ -192,7 +195,7 @@
 		if(heal_threshold > 75)
 			heal_threshold = 75
 
-	else if((href_list["adj_inject"]) && (!locked || issilicon(usr)))
+	else if((href_list["adj_inject"]) && (!locked || issilicon(usr) || usr == src))
 		var/adjust_num = text2num(href_list["adj_inject"])
 		injection_amount += adjust_num
 		if(injection_amount < 5)
@@ -200,7 +203,7 @@
 		if(injection_amount > 15)
 			injection_amount = 15
 
-	else if((href_list["use_beaker"]) && (!locked || issilicon(usr)))
+	else if((href_list["use_beaker"]) && (!locked || issilicon(usr) || usr == src))
 		use_beaker = !use_beaker
 
 	else if (href_list["eject"] && (!isnull(reagent_glass)))
@@ -210,18 +213,24 @@
 		else
 			usr << "<span class='notice'>You cannot eject the beaker because the panel is locked.</span>"
 
-	else if ((href_list["togglevoice"]) && (!locked || issilicon(usr)))
+	else if ((href_list["togglevoice"]) && (!locked || issilicon(usr) || usr == src))
 		vocal = !vocal
 
-	else if ((href_list["declaretreatment"]) && (!locked || issilicon(usr)))
+	else if ((href_list["declaretreatment"]) && (!locked || issilicon(usr) || usr == src))
 		declare_treatment = !declare_treatment
+
+	else if((href_list["ai_assume"])  && (!locked || issilicon(usr) || usr == src))
+		if(istype(usr, /mob/living/silicon/ai))
+			var/mob/living/silicon/ai/AI = usr
+			assume_ai(AI)
 
 	attack_hand(usr)
 	return
 
-/mob/living/bot/medbot/Emag(var/mob/user)
-	..()
+/mob/living/bot/medbot/emag_act(var/remaining_uses, var/mob/user)
+	. = ..()
 	if(!emagged)
+		kick_ai()
 		if(user)
 			user << "<span class='warning'>You short out [src]'s reagent synthesis circuits.</span>"
 		visible_message("<span class='warning'>[src] buzzes oddly!</span>")
@@ -231,6 +240,7 @@
 		emagged = 1
 		on = 1
 		update_icons()
+		. = 1
 	ignored |= user
 
 /mob/living/bot/medbot/explode()
@@ -258,9 +268,6 @@
 	if(H.stat == DEAD) // He's dead, Jim
 		return null
 
-	if(H.suiciding)
-		return null
-
 	if(H in ignored)
 		return null
 
@@ -285,10 +292,6 @@
 
 	if((H.getToxLoss() >= heal_threshold) && (!H.reagents.has_reagent(treatment_tox)))
 		return treatment_tox
-
-	for(var/datum/disease/D in H.viruses)
-		if (!H.reagents.has_reagent(treatment_virus))
-			return treatment_virus // STOP DISEASE FOREVER
 
 /* Construction */
 
@@ -360,5 +363,6 @@
 					var/mob/living/bot/medbot/S = new /mob/living/bot/medbot(T)
 					S.skin = skin
 					S.name = created_name
+					S.update_icons() // apply the skin
 					user.drop_from_inventory(src)
 					qdel(src)

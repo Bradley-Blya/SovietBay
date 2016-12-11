@@ -25,9 +25,6 @@
 		M = new mob_path(get_turf(source))
 	else
 		M = new /mob/living/carbon/human(get_turf(source))
-	M.real_name = source.real_name
-	M.name = M.real_name
-	source.mind.transfer_to(M)
 	M.ckey = source.ckey
 	add_antagonist(M.mind, 1, 0, 1) // Equip them and move them to spawn.
 	return M
@@ -36,10 +33,9 @@
 
 	var/obj/item/weapon/card/id/W = new id_type(player)
 	if(!W) return
-	W.name = "[player.real_name]'s ID Card"
 	W.access |= default_access
 	W.assignment = "[assignment]"
-	W.registered_name = player.real_name
+	player.set_id_info(W)
 	if(equip) player.equip_to_slot_or_del(W, slot_wear_id)
 	return W
 
@@ -65,28 +61,20 @@
 		var/obj/machinery/nuclearbomb/nuke = new(get_turf(nuke_spawn))
 		code = "[rand(10000, 99999)]"
 		nuke.r_code = code
-
-	if(code)
-		if(!paper_spawn_loc)
-			if(leader && leader.current)
-				paper_spawn_loc = get_turf(leader.current)
-			else
-				paper_spawn_loc = get_turf(locate("landmark*Nuclear-Code"))
-
+		paper_spawn_loc = get_turf(locate("landmark*Nuclear-Code"))
 		if(paper_spawn_loc)
 			// Create and pass on the bomb code paper.
 			var/obj/item/weapon/paper/P = new(paper_spawn_loc)
 			P.info = "The nuclear authorization code is: <b>[code]</b>"
 			P.name = "nuclear bomb code"
-			if(leader && leader.current)
+/*			if(leader && leader.current)
 				if(get_turf(P) == get_turf(leader.current) && !(leader.current.l_hand && leader.current.r_hand))
-					leader.current.put_in_hands(P)
-
-		if(!code_owner && leader)
-			code_owner = leader
-		if(code_owner)
-			code_owner.store_memory("<B>Nuclear Bomb Code</B>: [code]", 0, 0)
-			code_owner.current << "The nuclear authorization code is: <B>[code]</B>"
+					leader.current.put_in_hands(P)*/
+		for(var/mob/new_player/player in player_list)
+			if(player && player.ready && player.mind)
+				if(player.mind.assigned_role=="Mercenary")
+					code_owner.store_memory("<B>Nuclear Bomb Code</B>: [code]", 0, 0)
+					code_owner.current << "The nuclear authorization code is: <B>[code]</B>"
 	else
 		message_admins("<span class='danger'>Could not spawn nuclear bomb. Contact a developer.</span>")
 		return
@@ -102,17 +90,13 @@
 		player.current << "<span class='notice'>[leader_welcome_text]</span>"
 	else
 		player.current << "<span class='notice'>[welcome_text]</span>"
+	if (config.objectives_disabled == CONFIG_OBJECTIVE_NONE || !player.objectives.len)
+		player.current << "<span class='notice'>[antag_text]</span>"
 
 	if((flags & ANTAG_HAS_NUKE) && !spawned_nuke)
 		create_nuke()
 
-	show_objectives(player)
-
-	// Clown clumsiness check, I guess downstream might use it.
-	if (player.current.mind)
-		if (player.current.mind.assigned_role == "Clown")
-			player.current << "You have evolved beyond your clownish nature, allowing you to wield weapons without harming yourself."
-			player.current.mutations.Remove(CLUMSY)
+	src.show_objectives_at_creation(player)
 	return 1
 
 /datum/antagonist/proc/set_antag_name(var/mob/living/player)

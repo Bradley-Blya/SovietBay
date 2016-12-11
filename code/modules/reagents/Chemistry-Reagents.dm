@@ -1,7 +1,21 @@
+
+//Chemical Reagents - Initialises all /datum/reagent into a list indexed by reagent id
+/proc/initialize_chemical_reagents()
+	var/paths = typesof(/datum/reagent) - /datum/reagent
+	chemical_reagents_list = list()
+	for(var/path in paths)
+		var/datum/reagent/D = new path()
+		if(!D.name)
+			continue
+		chemical_reagents_list[D.id] = D
+
+
 /datum/reagent
 	var/name = "Reagent"
 	var/id = "reagent"
 	var/description = "A non-descript chemical."
+	var/taste_description = "old rotten bandaids"
+	var/taste_mult = 1 //how this taste compares to others. Higher values means it is more noticable
 	var/datum/reagents/holder = null
 	var/reagent_state = SOLID
 	var/list/data = null
@@ -14,12 +28,13 @@
 	var/overdose = 0
 	var/scannable = 0 // Shows up on health analyzers.
 	var/affects_dead = 0
-	var/glass_icon_state = null
-	var/glass_name = null
-	var/glass_desc = null
-	var/glass_center_of_mass = null
 	var/color = "#000000"
 	var/color_weight = 1
+
+	var/glass_icon = DRINK_ICON_DEFAULT
+	var/glass_name = "something"
+	var/glass_desc = "It's a glass of... what, exactly?"
+	var/list/glass_special = null // null equivalent to list()
 
 /datum/reagent/proc/remove_self(var/amount) // Shortcut
 	holder.remove_reagent(id, amount)
@@ -39,7 +54,7 @@
 		return
 	if(!affects_dead && M.stat == DEAD)
 		return
-	if(overdose && (dose > overdose) && (location != CHEM_TOUCH))
+	if(overdose && (volume > overdose) && (location != CHEM_TOUCH))
 		overdose(M, alien)
 	var/removed = metabolism
 	if(ingest_met && (location == CHEM_INGEST))
@@ -103,10 +118,3 @@
 
 /datum/reagent/proc/reaction_mob(var/mob/target)
 	touch_mob(target)
-
-/datum/reagent/woodpulp
-	name = "Wood Pulp"
-	id = "woodpulp"
-	description = "A mass of wood fibers."
-	reagent_state = LIQUID
-	color = "#B97A57"
