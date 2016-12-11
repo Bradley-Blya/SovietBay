@@ -1,4 +1,5 @@
 /obj/logrus/effect/auxilary/trigger
+	//type "mental", "gesture", "point", "[signal]", "[scanner]"
 
 /obj/logrus/effect/auxilary/trigger/cost()
 	switch(type)

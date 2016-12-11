@@ -1,3 +1,19 @@
+/obj/logrus/effect/targeted/ileus//Suspitios type of spell, wich is just a shourtct to mana expences
+	var/magnitude		//amount of mana will be drained
+	/*   no prolonged drains here.
+	var/extention = 1	//the number of steps
+	var/step = 5		//time between power drains (in ticks?)
+	*/
+/obj/logrus/effect/targeted/ileus/perform()
+	if(active)
+		cast()
+
+/obj/logrus/effect/targeted/ileus/cast()
+	source.SendMana()
+
+
+//////#REDUNDANT
+/*
 /obj/logrus/effect/auxilary/drainer
 	var/magnitude		//amount of mana will be drained
 	var/extention = 1	//the number of steps
@@ -26,7 +42,10 @@
 			if("extension")	return text
 			if("step")		return text
 			else return 0
-	return 1
+	return 1*/
+
+
+
 
 
 

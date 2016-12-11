@@ -39,9 +39,9 @@
 	if(text in main)
 		switch(text)
 			if("part")	return "part"
-	if(magnitude_mod.Find(text))
+	if(modifiers.Find(text))
 		switch(option)
-			if("main") range = magnitude_mod["text"]/5
+			if("main") range = modifiers["text"]/5
 			//if("part")
 
 

@@ -54,18 +54,46 @@
 	proc/S()
 		return
 
+/obj/logrus/proc/SendMana(var/amt, var/xt, var/yt, var/receiver)
+	var/TT = GetTargetTurf(src,xt,yt)
+	if(!TT)
+		world.log << "bad TT [world.time]"
+		return
+	TransferMana(src, TT, amt, receiver)
 
-/obj/logrus/proc/Transfer(var/obj/logrus/sender, var/obj/logrus/receiver, var/amt, var/t = 1)
+/obj/logrus/effect/targeted/SendMana(var/amt, var/xt = XT, var/yt = YT, var/receiver = target)
+	..()
+
+/proc/TransferMana(var/obj/logrus/sender, var/turf/T, var/amt, var/receiver, var/d = 1)
 	if(!sender.mana)
 		return
 
 	amt = sender.DecreaseMana(amt)
-	if(t)
-		t = amt - amt * transfer_penalty(receiver)
-		amt -= t
+	if(d)
+		d = amt - amt * transfer_penalty(receiver)
+		amt -= d
 		//TransferEffects(target, waste)
 
-	receiver.IncreaseMana(amt)
+	DispenceMana(T, amt, receiver)
+
+
+/proc/DispenceMana(var/turf/T, var/amt, var/obj/logrus/REC)
+	if(REC)
+		if(T == GetTurfLoc(REC))
+			REC.IncreaseMana(amt)
+			return
+
+	var/list/spells = list()
+	spells = GetSeenSpells(T)
+	if(!spells.len)
+		Discharge(T, amt)
+	else
+		amt = amt/spells.len
+		for(var/obj/logrus/S in spells)
+			S.IncreaseMana(amt)
+
+
+
 
 
 /obj/logrus/proc/DecreaseMana(var/amt)
@@ -83,7 +111,7 @@
 /obj/logrus/proc/IncreaseMana(var/amt)
 	mana += amt
 
-/obj/logrus/proc/transfer_penalty(target)
+/proc/transfer_penalty(target)
 	var r
 	var penalty
 	r = get_dist(src, target)
@@ -99,11 +127,11 @@
 
 	penalty = 1 - penalty/100
 	return penalty
-	
 
-/obj/logrus/proc/Discharge(var/amt)
+
+/proc/Discharge(var/turf/T, var/amt)
 	empulse(src, 1, 0)
-	
+
 /*/obj/logrus/proc/transfer_penalty(var/r)
 
 	switch(r)
@@ -127,11 +155,11 @@
 /datum/logrus/mana
 	var/list
 		mana[5][SPECTRUM]
-		
-	var/origin
-	
 
-	
+	var/origin
+
+
+
 /datum/logrus/mana/proc/get_amt(var/p as num, var/c as num) //p - polarisation, c - color ; returns total amount of mana of amount of specified color|polarisation if specified
 	var/amt
 	if(!p)
@@ -147,8 +175,8 @@
 			for(var/j = 0, j < SPECTRUM, j++)
 				amt += mana[p][j]
 		else
-			amt = mana[p][c]	
-	return amt		
+			amt = mana[p][c]
+	return amt
 
 /datum/logrus/mana/proc/polarisate(var/n as num)
 	for(var/i = 0, i < 5, i++)
@@ -157,7 +185,7 @@
 		for(var/j = 0, j < SPECTRUM, j++)
 			mana[n][j] += mana[i][j]
 			mana[i][j] = 0
-			
+
 /datum/logrus/mana/proc/randomize_color(var/n as num)
 	var/datum/logrus/mana/dummy = new
 	var/total
@@ -165,13 +193,13 @@
 		var/total = get_amt(i)
 		for(var/j = 0, j < SPECTRUM, j++)
 			dummy.mana[i][j] = total/SPECTRUM
-			
+
 	if(get_amt() = dummy.get_amt())
 		mana = dummy.mana
 		. = 1
 	del dummy
-	return 
-	
+	return
+
 /datum/logrus/mana/proc/split(var/n as num)
 	if(n, n > 0, n < 5)
 		var/datum/logrus/mana/D = new
@@ -180,7 +208,7 @@
 				D.mana[i][j] = n*mana[i][j]
 				//mana -= D.mana[i][j]
 		return D
-		
+
 /datum/logrus/mana/proc/substract(var/datum/logrus/mana/D)
 	var/datum/logrus/mana/dummy = new
 	dummy.mana = mana
@@ -193,24 +221,24 @@
 				return 0
 			else
 				dummy.mana[i][j] -= D.mana[i][j]
-				
+
 	mana = dummy.mana
 	del dummy
 	return 1
-	
+
 /datum/logrus/mana/proc/add(var/datum/logrus/mana/D)
 	for(var/i = 0, i < 5, i++)
 		for(var/j = 0, j < SPECTRUM, j++)
 			mana[i][j] += D.mana[i][j]
-			
+
 	del D
-	
+
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /obj/logrus/mana
 	var/datum/logrus/mana/M =  //These are mana datums. Later. Or one mana datum. XZ
-	
+
 	proc/Destroy()
 		del src
 
@@ -247,16 +275,16 @@
 /obj/logrus/mana/radiation
 	var/target_coordinates
 	var/target_spec
-		
+
 /obj/logrus/mana/transfer/perform()
 	var/list/spells = list()
-	
-	
-	
-	
-	
-	
-	
+
+
+
+
+
+
+
 /obj/logrus/mana/transfer/dest/perform()
 
 
